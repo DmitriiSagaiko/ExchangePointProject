@@ -15,11 +15,13 @@ public class UserRepository {
   public Optional<User> registerUser(String name, String password) {
     //TODO
     //выполнять все проверки на логины и пароли/ через отдельные методы. В этих методах предусмотреть выброс ошибок
+    return Optional.empty();
   }
 
   public Optional<User> login(String name, String password) {
     //TODO
     //Проверка логина и пароля, если такой юзер есть, вернуть его.
+    return Optional.empty();
   }
 
   public Map<Integer, Account> showTheBalance(User activeUser) {
@@ -39,7 +41,7 @@ public class UserRepository {
 //  }
 
   public Map<Integer, Account> deposit(User activeUser, Integer accountNumber, double amount) {
-    if (isUserHasAccount(activeUser,accountNumber)) {
+    if (isUserHasAccount(activeUser, accountNumber)) {
       Account account = activeUser.getAccounts().get(accountNumber);
       account.setAmount(account.getAmount() + amount);
       activeUser.getAccounts().put(accountNumber, account);
@@ -47,19 +49,20 @@ public class UserRepository {
       System.out.println("На счету осталось:" + account.getAmount() + " " + account.getCurrency());
       return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
     }
-    Account newAccount = openNewAccount(activeUser, generateAccountNumber(), amount);
-    activeUser.getAccounts().put(newAccount.getAccountNumber(),newAccount);
+    Account newAccount = openNewAccount(activeUser, "RUB", amount); // создается счет по дефолту в рублях
+    activeUser.getAccounts().put(newAccount.getAccountNumber(), newAccount);
     return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
   }
 
   public Map<Integer, Account> withdraw(User activeUser, Integer accountNumber, double amount) {
-    if ((isUserHasAccount(activeUser,accountNumber))) {
-      if (isUserHasEnoughMoney(activeUser,accountNumber, amount)) {
+    if ((isUserHasAccount(activeUser, accountNumber))) {
+      if (isUserHasEnoughMoney(activeUser, accountNumber, amount)) {
         Account account = activeUser.getAccounts().get(accountNumber);
         account.setAmount(account.getAmount() - amount);
         activeUser.getAccounts().put(accountNumber, account);
         System.out.println("Деньги со счета успешно сняты :" + amount);
-        System.out.println("На счету осталось:" + account.getAmount() + " " + account.getCurrency());
+        System.out.println(
+            "На счету осталось:" + account.getAmount() + " " + account.getCurrency());
         return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
       } else {
         System.out.println("Недостаточно денег на счету");
@@ -70,32 +73,33 @@ public class UserRepository {
     return Collections.emptyMap();
   }
 
-  public Account openNewAccount(User activeUser,String currency, double depositSum) {
+  public Account openNewAccount(User activeUser, String currency, double depositSum) {
     int id = generateAccountNumber();
-    Account newAccount = new Account(id,currency,depositSum);
-    activeUser.addNewAccount(id,newAccount);
+    Account newAccount = new Account(id, currency, depositSum);
+    activeUser.addNewAccount(id, newAccount);
     return newAccount;
   }
 
   public Account closeAccount(User activeUser, Integer accountNumber) {
-    if (activeUser.getOneAccount(accountNumber).get(accountNumber).getAmount() <=1) {
+    if (activeUser.getOneAccount(accountNumber).get(accountNumber).getAmount() <= 1) {
       Account account = activeUser.getAccounts().get(accountNumber);
       activeUser.deleteAccount(accountNumber);
       return account;
     }
     System.out.println("Переведите или снимите все деньги с запрашеваемого счета");
-      return null;
+    return null;
   }
 
-  public Map<Integer, Integer> exchangeCurrency(User activeUser, Integer from, Integer to,
-      double amount) {
-    //выполняется проверка на возможность такого обмена
-    //TODO. Берется приватный метод пересчета и в мапе меняется значение по двум валютам на величину amount;
-  }
+//  public Map<Integer, Integer> exchangeCurrency(User activeUser, Integer from, Integer to,
+//      double amount) {
+//    //выполняется проверка на возможность такого обмена
+//    //TODO. Берется приватный метод пересчета и в мапе меняется значение по двум валютам на величину amount;
+//  }
 
-  private boolean isUserHasAccount (User activeUser, Integer accountNumber) {
+  private boolean isUserHasAccount(User activeUser, Integer accountNumber) {
     return activeUser.getAccounts().containsKey(accountNumber);
   }
+
   private boolean isUserHasEnoughMoney(User activeUser, Integer accountNumber, double amount) {
     Account account = activeUser.getAccounts().get(accountNumber);
     return ((account.getAmount() - amount) >= 0) && amount >= 0;
@@ -110,4 +114,16 @@ public class UserRepository {
     return counter;
   }
 
+  public Map<Integer, Account> transfer(User activeUser, Integer from, Integer to, double amount) {
+    Account fromAcc = activeUser.getAccounts().get(from);
+    fromAcc.setAmount(fromAcc.getAmount() - amount);
+
+    Account toAcc = activeUser.getAccounts().get(to);
+    toAcc.setAmount(toAcc.getAmount() + amount);
+
+    activeUser.getAccounts().put(from,fromAcc);
+    activeUser.getAccounts().put(to,toAcc);
+
+    return new HashMap<>(activeUser.getAccounts());
+  }
 }

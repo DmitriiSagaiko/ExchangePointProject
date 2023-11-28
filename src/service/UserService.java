@@ -2,10 +2,7 @@ package service;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import models.Account;
@@ -64,7 +61,8 @@ public class UserService {
 
   public Map<Integer, Account> deposit(Integer accountNumber, double amount) {
     if (isActiveUser()) {
-      dataRepository.deposit(activeUser, accountNumber, amount);
+      String currency = activeUser.getOneAccount(accountNumber).get(accountNumber).getCurrency();
+      dataRepository.deposit(activeUser, accountNumber, amount,currency);
       return userRepository.deposit(activeUser, accountNumber, amount);
     }
     return Collections.emptyMap();
@@ -72,8 +70,21 @@ public class UserService {
 
   public Map<Integer, Account> withdraw(Integer accountNumber, double amount) {
     if (isActiveUser()) {
-      dataRepository.withdraw(activeUser, accountNumber, amount);
+      String currency = activeUser.getOneAccount(accountNumber).get(accountNumber).getCurrency();
+      dataRepository.withdraw(activeUser, accountNumber, amount, currency);
       return userRepository.withdraw(activeUser, accountNumber,amount);
+    }
+    return Collections.emptyMap();
+  }
+
+  public Map<Integer, Account> transfer(Integer from, Integer to, double amount, String currency) {
+    if (amount <= 0  && activeUser.getOneAccount(from).get(from).getAmount() < amount) {
+      System.out.println("Нельзя перевести отрицательную сумму или на счету недостаточно средств ");
+      return Collections.emptyMap();
+    }
+    if (isActiveUser()) {
+      dataRepository.transfer(activeUser,from,to,amount,currency);
+      return userRepository.transfer(activeUser,from,to,amount);
     }
     return Collections.emptyMap();
   }
@@ -100,13 +111,13 @@ public class UserService {
     return Optional.empty();
   }
 
-  public Map<Integer, Integer> exchangeCurrency(String from, String to, double amount) {
-    if (isActiveUser()) {
-      dataRepository.exchangeCurrency(activeUser, from, to, amount);
-      return userRepository.exchangeCurrency(activeUser, from, to, amount);
-    }
-    return Collections.emptyMap();
-  }
+//  public Map<Integer, Integer> exchangeCurrency(String from, String to, double amount) {
+//    if (isActiveUser()) {
+//      dataRepository.exchangeCurrency(activeUser, from, to, amount);
+//      return userRepository.exchangeCurrency(activeUser, from, to, amount);
+//    }
+//    return Collections.emptyMap();
+//  }
 
 
   private double getCurrencyToEur(String currency) {

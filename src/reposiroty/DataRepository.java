@@ -5,9 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import models.Currency;
 import models.Transaction;
-import models.TypeOfTransaction;
+import models.TypeOfOperation;
 import models.User;
 
 public class DataRepository {
@@ -52,19 +51,25 @@ public class DataRepository {
   }
 
 
-  public Transaction deposit(User activeUser, Integer accountNumber, double amount) {
-    transactions.add(new Transaction(activeUser,accountNumber, TypeOfTransaction.DEBIT, amount));
+  public Transaction deposit(User activeUser, Integer accountNumber, double amount, String value) {
+    transactions.add(new Transaction(activeUser,accountNumber, TypeOfOperation.DEBIT, amount, value));
     return transactions.get(transactions.size()-1);
   }
 
-  public Transaction withdraw(User activeUser, Integer accountNumber, double amount) {
-    transactions.add(new Transaction(activeUser,accountNumber, TypeOfTransaction.WITHDRAW, amount));
+  public Transaction withdraw(User activeUser, Integer accountNumber, double amount, String value) {
+    transactions.add(new Transaction(activeUser,accountNumber, TypeOfOperation.WITHDRAW, amount, value));
+    return transactions.get(transactions.size()-1); // возвращаем последнюю транзакцию
+  }
+
+  public Transaction transfer(User activeUser,Integer from, Integer to, double amount, String value) {
+    transactions.add(new Transaction(activeUser,from,to,TypeOfOperation.TRANSFER,amount, value));
     return transactions.get(transactions.size()-1); // возвращаем последнюю транзакцию
   }
 
   public Optional<String[]> showTheHistory(int typeOfOperation, User activeUser) {
     //TODO в зависимости от типа операции создать 2 доп метода Private и вызывать их
     //история по валюте/ по всем счетам
+    return Optional.empty();
   }
 
 //  public Transaction exchangeCurrency(User activeUser, Integer from, Integer to, double amount) {

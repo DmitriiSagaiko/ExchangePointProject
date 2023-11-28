@@ -13,23 +13,27 @@ public class Transaction {
   private Integer accountFrom;
   private Integer accountTo;
 
- private TypeOfTransaction type;
+  private TypeOfOperation type;
+
+  private String currency;
 
 
-  public Transaction(User user, Integer accountFrom, TypeOfTransaction type, double amount) {
+  public Transaction(User user, Integer accountFrom, TypeOfOperation type, double amount, String currency) {
     this.user = user;
     this.accountFrom = this.accountFrom;
     this.type = type;
     this.amount = amount;
+    this.currency = currency;
   }
 
   public Transaction(User user, Integer accountFrom, Integer accountTo,
-      TypeOfTransaction type, double amount) {
+      TypeOfOperation type, double amount, String currency) {
     this.user = user;
     this.accountFrom = this.accountFrom;
     this.accountTo = this.accountTo;
     this.type = type;
     this.amount = amount;
+    this.currency = currency;
   }
 
   public LocalDateTime getLocalDateTime() {
@@ -64,11 +68,11 @@ public class Transaction {
     this.accountTo = accountTo;
   }
 
-  public TypeOfTransaction getType() {
+  public TypeOfOperation getType() {
     return type;
   }
 
-  public void setType(TypeOfTransaction type) {
+  public void setType(TypeOfOperation type) {
     this.type = type;
   }
 }
