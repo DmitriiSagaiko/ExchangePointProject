@@ -6,9 +6,9 @@ public class Account {
 
   private String currency;
 
-  private int amount;
+  private double amount;
 
-  public Account(int accountNumber, String currency, int amount) {
+  public Account(int accountNumber, String currency, double amount) {
     this.accountNumber = accountNumber;
     this.currency = currency;
     this.amount = amount;
@@ -26,11 +26,11 @@ public class Account {
     this.currency = currency;
   }
 
-  public int getAmount() {
+  public double getAmount() {
     return amount;
   }
 
-  public void setAmount(int amount) {
+  public void setAmount(double amount) {
     this.amount = amount;
   }
 }

@@ -1,8 +1,14 @@
 package service;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import models.Account;
 import models.User;
 import reposiroty.DataRepository;
 import reposiroty.UserRepository;
@@ -43,42 +49,48 @@ public class UserService {
     return Optional.empty();
   }
 
-  public Map<Integer, Integer> checkTheBalance() {
+  public Map<Integer, Account> checkTheBalance() {
     if (isActiveUser()) {
-      return userRepository.showTheBalance(activeUser);
+      return activeUser.getAccounts();
+    }
+    return Collections.emptyMap();
+  }
+  public Map<Integer, Account> checkTheBalance(Integer accountID) {
+    if (isActiveUser()) {
+      return activeUser.getOneAccount(accountID);
     }
     return Collections.emptyMap();
   }
 
-  public Map<Integer, Integer> deposit(String currency, double amount) {
+  public Map<Integer, Account> deposit(Integer accountNumber, double amount) {
     if (isActiveUser()) {
-      dataRepository.deposit(activeUser, currency, amount);
-      return userRepository.deposit(activeUser, currency, amount);
+      dataRepository.deposit(activeUser, accountNumber, amount);
+      return userRepository.deposit(activeUser, accountNumber, amount);
     }
     return Collections.emptyMap();
   }
 
-  public Map<Integer, Integer> withdraw(String currency, double amount) {
+  public Map<Integer, Account> withdraw(Integer accountNumber, double amount) {
     if (isActiveUser()) {
-      //TODO проверки на реальность суммы
-      dataRepository.withdraw(activeUser, currency, amount);
-      return userRepository.withdraw(activeUser, currency);
+      dataRepository.withdraw(activeUser, accountNumber, amount);
+      return userRepository.withdraw(activeUser, accountNumber,amount);
     }
     return Collections.emptyMap();
   }
 
-  public Map<Integer, Integer> openNewAccount(String currency, double depositSum) {
-    if (isActiveUser()) {
-      return userRepository.openNewAccount(activeUser, currency, depositSum);
+  public Optional<Account> openNewAccount(String currency,double depositSum) {
+    if (isActiveUser() && depositSum>0) {
+      return Optional.of(userRepository.openNewAccount(activeUser, currency, depositSum));
     }
-    return Collections.emptyMap();
+    return Optional.empty();
   }
 
-  public Map<Integer, Integer> closeAccount(String currency) {
-    if (isActiveUser()) {
-      return userRepository.closeAccount(activeUser, currency);
+  public Optional<Account> closeAccount(Integer id) {
+    Map<Integer, Account> map = getMapOfAccount();
+    if (isActiveUser() && map.containsKey(id)) {
+      return Optional.of(userRepository.closeAccount(activeUser, id));
     }
-    return Collections.emptyMap();
+    return Optional.empty();
   }
 
   public Optional<String[]> showTheHistory(int typeOfOperation) {
@@ -99,6 +111,37 @@ public class UserService {
 
   private double getCurrencyToEur(String currency) {
     return dataRepository.getTheRate(currency);
+  }
+
+//  private Map<String,Double> getOneCurrency(String currency) {
+//    userRepository.showTheBalanceByCurrency(activeUser,currency);
+//  }
+
+  public void showAllAccountsID() {
+    if (isActiveUser()) {
+      Map<Integer, Account> map = activeUser.getAccounts();
+      if(map.isEmpty()) {
+        System.out.println("У вас нет счетов! откройте новый счет");
+      } else {
+            map.forEach((key, value) -> System.out.println("У Вас есть счета: \n" + key + "\n"));
+      }
+    }
+  }
+
+  public Map<Integer, Account> getMapOfAccount() {
+    if (isActiveUser()) {
+      return activeUser.getAccounts();
+    }
+    return Collections.emptyMap();
+  }
+
+  private Map<String,Double> getAllCurrencyAndRate () {
+    return new HashMap<>(dataRepository.getCurrency());
+  }
+
+  public Set<String> getCurrency () {
+    Map<String,Double> map = getAllCurrencyAndRate();
+    return map.keySet();
   }
 
 

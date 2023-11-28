@@ -42,24 +42,24 @@ public class DataRepository {
     return currency.getCurrencyRate().get(input);
   }
 
-  public boolean changeTheRate(String input, double amount) {
-    currency.currencyRate.put(input,amount);
-    return true;
-  }
+//  public boolean changeTheRate(String input, double amount) {
+//    currency.currencyRate.put(input,amount);
+//    return true;
+//  }
 
   public List<Transaction> showAllTransactions(int id) {
     return transactions;
   }
 
 
-  public Transaction deposit(User activeUser, String currency, double amount) {
-    transactions.add(new Transaction(activeUser,currency, TypeOfTransaction.DEBIT, amount));
+  public Transaction deposit(User activeUser, Integer accountNumber, double amount) {
+    transactions.add(new Transaction(activeUser,accountNumber, TypeOfTransaction.DEBIT, amount));
     return transactions.get(transactions.size()-1);
   }
 
-  public Transaction withdraw(User activeUser, String currency, double amount) {
-    transactions.add(new Transaction(activeUser,currency, TypeOfTransaction.WITHDRAW, amount));
-    return transactions.get(transactions.size()-1);
+  public Transaction withdraw(User activeUser, Integer accountNumber, double amount) {
+    transactions.add(new Transaction(activeUser,accountNumber, TypeOfTransaction.WITHDRAW, amount));
+    return transactions.get(transactions.size()-1); // возвращаем последнюю транзакцию
   }
 
   public Optional<String[]> showTheHistory(int typeOfOperation, User activeUser) {
@@ -67,12 +67,13 @@ public class DataRepository {
     //история по валюте/ по всем счетам
   }
 
-  public Transaction exchangeCurrency(User activeUser, String from, String to, double amount) {
-    transactions.add(new Transaction(activeUser,from,to,TypeOfTransaction.TRANSFER, amount));
-    return transactions.get(transactions.size()-1);
-  }
+//  public Transaction exchangeCurrency(User activeUser, Integer from, Integer to, double amount) {
+//    transactions.add(new Transaction(activeUser,from,to,TypeOfTransaction.TRANSFER, amount));
+//    return transactions.get(transactions.size()-1);
+//  }
 
   public Map<String, Double> getCurrency() {
     return currency.getCurrencyRate();
   }
+
 }
