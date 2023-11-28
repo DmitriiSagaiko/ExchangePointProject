@@ -2,7 +2,6 @@ package reposiroty;
 
 import java.util.Map;
 import java.util.Optional;
-import models.Currency;
 import models.User;
 
 public class UserRepository {
@@ -22,25 +21,25 @@ public class UserRepository {
     return activeUser.getAccounts();
   }
 
-  public Map<Integer, Integer> deposit(User activeUser, Currency currency, double amount) {
+  public Map<Integer, Integer> deposit(User activeUser, String currency, double amount) {
     //TODO
   }
 
-  public Map<Integer, Integer> withdraw(User activeUser, Currency currency) {
+  public Map<Integer, Integer> withdraw(User activeUser, String currency) {
     //TODO
   }
 
-  public Map<Integer, Integer> openNewAccount(User activeUser, Currency currency, double depositSum) {
+  public Map<Integer, Integer> openNewAccount(User activeUser, String currency, double depositSum) {
     //TODO
   }
 
-  public Map<Integer, Integer> closeAccount(User activeUser, Currency currency) {
+  public Map<Integer, Integer> closeAccount(User activeUser, String currency) {
     //TODO. Проверяем все счета, если есть только текущая currency. удаляем ее из мапы
     //если счетов несколько, надо делать пересчет по текущему курсу и удалить из мапы
     //для пересчета сделать отдельный метод.
   }
 
-  public Map<Integer, Integer> exchangeCurrency(User activeUser, Currency from, Currency to, double amount) {
+  public Map<Integer, Integer> exchangeCurrency(User activeUser, String from, String to, double amount) {
     //выполняется проверка на возможность такого обмена
     //TODO. Берется приватный метод пересчета и в мапе меняется значение по двум валютам на величину amount;
   }

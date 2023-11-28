@@ -3,17 +3,11 @@ package service;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import models.Currency;
 import models.User;
 import reposiroty.DataRepository;
 import reposiroty.UserRepository;
 
 public class UserService {
-
-
-  private double usdToEur = getCurrencyToEur(Currency.USD);
-  private double rubToEur = 1 / (getCurrencyToEur(Currency.RUB));
-  private double rubToUsd = 1 / (usdToEur / rubToEur);
 
   private User activeUser;
 
@@ -56,7 +50,7 @@ public class UserService {
     return Collections.emptyMap();
   }
 
-  public Map<Integer, Integer> deposit(Currency currency, double amount) {
+  public Map<Integer, Integer> deposit(String currency, double amount) {
     if (isActiveUser()) {
       dataRepository.deposit(activeUser, currency, amount);
       return userRepository.deposit(activeUser, currency, amount);
@@ -64,7 +58,7 @@ public class UserService {
     return Collections.emptyMap();
   }
 
-  public Map<Integer, Integer> withdraw(Currency currency, double amount) {
+  public Map<Integer, Integer> withdraw(String currency, double amount) {
     if (isActiveUser()) {
       //TODO проверки на реальность суммы
       dataRepository.withdraw(activeUser, currency, amount);
@@ -73,14 +67,14 @@ public class UserService {
     return Collections.emptyMap();
   }
 
-  public Map<Integer, Integer> openNewAccount(Currency currency, double depositSum) {
+  public Map<Integer, Integer> openNewAccount(String currency, double depositSum) {
     if (isActiveUser()) {
       return userRepository.openNewAccount(activeUser, currency, depositSum);
     }
     return Collections.emptyMap();
   }
 
-  public Map<Integer, Integer> closeAccount(Currency currency) {
+  public Map<Integer, Integer> closeAccount(String currency) {
     if (isActiveUser()) {
       return userRepository.closeAccount(activeUser, currency);
     }
@@ -94,7 +88,7 @@ public class UserService {
     return Optional.empty();
   }
 
-  public Map<Integer, Integer> exchangeCurrency(Currency from, Currency to, double amount) {
+  public Map<Integer, Integer> exchangeCurrency(String from, String to, double amount) {
     if (isActiveUser()) {
       dataRepository.exchangeCurrency(activeUser, from, to, amount);
       return userRepository.exchangeCurrency(activeUser, from, to, amount);
@@ -103,7 +97,7 @@ public class UserService {
   }
 
 
-  private double getCurrencyToEur(Currency currency) {
+  private double getCurrencyToEur(String currency) {
     return dataRepository.getTheRate(currency);
   }
 

@@ -4,11 +4,11 @@ public class Account {
 
   private final int accountNumber;
 
-  private Currency currency;
+  private String currency;
 
   private int amount;
 
-  public Account(int accountNumber, Currency currency, int amount) {
+  public Account(int accountNumber, String currency, int amount) {
     this.accountNumber = accountNumber;
     this.currency = currency;
     this.amount = amount;
@@ -18,11 +18,11 @@ public class Account {
     return accountNumber;
   }
 
-  public Currency getCurrency() {
+  public String getCurrency() {
     return currency;
   }
 
-  public void setCurrency(Currency currency) {
+  public void setCurrency(String currency) {
     this.currency = currency;
   }
 

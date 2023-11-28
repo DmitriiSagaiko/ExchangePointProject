@@ -10,20 +10,20 @@ public class Transaction {
 
   private double amount;
 
-  private Currency currencyFrom;
-  private Currency currencyTo;
+  private String currencyFrom;
+  private String currencyTo;
 
  private TypeOfTransaction type;
 
 
-  public Transaction(User user, Currency currencyFrom, TypeOfTransaction type, double amount) {
+  public Transaction(User user, String currencyFrom, TypeOfTransaction type, double amount) {
     this.user = user;
     this.currencyFrom = currencyFrom;
     this.type = type;
     this.amount = amount;
   }
 
-  public Transaction(User user, Currency currencyFrom, Currency currencyTo,
+  public Transaction(User user, String currencyFrom, String currencyTo,
       TypeOfTransaction type, double amount) {
     this.user = user;
     this.currencyFrom = currencyFrom;
@@ -48,19 +48,19 @@ public class Transaction {
     this.user = user;
   }
 
-  public Currency getCurrencyFrom() {
+  public String getCurrencyFrom() {
     return currencyFrom;
   }
 
-  public void setCurrencyFrom(Currency currencyFrom) {
+  public void setCurrencyFrom(String currencyFrom) {
     this.currencyFrom = currencyFrom;
   }
 
-  public Currency getCurrencyTo() {
+  public String getCurrencyTo() {
     return currencyTo;
   }
 
-  public void setCurrencyTo(Currency currencyTo) {
+  public void setCurrencyTo(String currencyTo) {
     this.currencyTo = currencyTo;
   }
 

@@ -12,27 +12,38 @@ import models.User;
 
 public class DataRepository {
 
+  public static class Currency {
+
+    final Map<String, Double> currencyRate = new HashMap<>();
+
+    //RUB to Currency
+
+    public Map<String, Double> getCurrencyRate() {
+      return currencyRate;
+    }
+
+  }
+
   List<Transaction> transactions = new LinkedList<>();
-  Map<Currency, Double> exchangeRateToEur = new HashMap<>();
+
+  Currency currency = new Currency();
 
 
 
 
 
   private void feelTheRate() {
-    //TODO Переделать
-    exchangeRateToEur.put(Currency.EUR, 1.0);
-    exchangeRateToEur.put(Currency.USD, 0.95);
-    exchangeRateToEur.put(Currency.RUB,0.095);
+    currency.currencyRate.put("USD", 95.0);
+    currency.currencyRate.put("EUR", 100.0);
+    currency.currencyRate.put("RUB", 1.0);
   }
 
-  public double getTheRate(Currency currency) {
-    return exchangeRateToEur.get(currency);
+  public double getTheRate(String input) {
+    return currency.getCurrencyRate().get(input);
   }
 
-  public boolean changeTheRate(Currency currency, double amount) {
-    //TODO переделать
-    exchangeRateToEur.put(currency, amount);
+  public boolean changeTheRate(String input, double amount) {
+    currency.currencyRate.put(input,amount);
     return true;
   }
 
@@ -41,12 +52,12 @@ public class DataRepository {
   }
 
 
-  public Transaction deposit(User activeUser, Currency currency, double amount) {
+  public Transaction deposit(User activeUser, String currency, double amount) {
     transactions.add(new Transaction(activeUser,currency, TypeOfTransaction.DEBIT, amount));
     return transactions.get(transactions.size()-1);
   }
 
-  public Transaction withdraw(User activeUser, Currency currency, double amount) {
+  public Transaction withdraw(User activeUser, String currency, double amount) {
     transactions.add(new Transaction(activeUser,currency, TypeOfTransaction.WITHDRAW, amount));
     return transactions.get(transactions.size()-1);
   }
@@ -56,8 +67,12 @@ public class DataRepository {
     //история по валюте/ по всем счетам
   }
 
-  public Transaction exchangeCurrency(User activeUser, Currency from, Currency to, double amount) {
+  public Transaction exchangeCurrency(User activeUser, String from, String to, double amount) {
     transactions.add(new Transaction(activeUser,from,to,TypeOfTransaction.TRANSFER, amount));
     return transactions.get(transactions.size()-1);
+  }
+
+  public Map<String, Double> getCurrency() {
+    return currency.getCurrencyRate();
   }
 }
