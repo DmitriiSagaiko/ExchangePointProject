@@ -10,26 +10,30 @@ public class Transaction {
 
   private double amount;
 
-  private String currencyFrom;
-  private String currencyTo;
+  private Integer accountFrom;
+  private Integer accountTo;
 
- private TypeOfTransaction type;
+  private TypeOfOperation type;
+
+  private String currency;
 
 
-  public Transaction(User user, String currencyFrom, TypeOfTransaction type, double amount) {
+  public Transaction(User user, Integer accountFrom, TypeOfOperation type, double amount, String currency) {
     this.user = user;
-    this.currencyFrom = currencyFrom;
+    this.accountFrom = this.accountFrom;
     this.type = type;
     this.amount = amount;
+    this.currency = currency;
   }
 
-  public Transaction(User user, String currencyFrom, String currencyTo,
-      TypeOfTransaction type, double amount) {
+  public Transaction(User user, Integer accountFrom, Integer accountTo,
+      TypeOfOperation type, double amount, String currency) {
     this.user = user;
-    this.currencyFrom = currencyFrom;
-    this.currencyTo = currencyTo;
+    this.accountFrom = this.accountFrom;
+    this.accountTo = this.accountTo;
     this.type = type;
     this.amount = amount;
+    this.currency = currency;
   }
 
   public LocalDateTime getLocalDateTime() {
@@ -48,27 +52,27 @@ public class Transaction {
     this.user = user;
   }
 
-  public String getCurrencyFrom() {
-    return currencyFrom;
+  public Integer getAccountFrom() {
+    return accountFrom;
   }
 
-  public void setCurrencyFrom(String currencyFrom) {
-    this.currencyFrom = currencyFrom;
+  public void setAccountFrom(Integer accountFrom) {
+    this.accountFrom = accountFrom;
   }
 
-  public String getCurrencyTo() {
-    return currencyTo;
+  public Integer getAccountTo() {
+    return accountTo;
   }
 
-  public void setCurrencyTo(String currencyTo) {
-    this.currencyTo = currencyTo;
+  public void setAccountTo(Integer accountTo) {
+    this.accountTo = accountTo;
   }
 
-  public TypeOfTransaction getType() {
+  public TypeOfOperation getType() {
     return type;
   }
 
-  public void setType(TypeOfTransaction type) {
+  public void setType(TypeOfOperation type) {
     this.type = type;
   }
 }

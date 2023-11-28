@@ -19,11 +19,11 @@ public class AdminService {
     this.dataRepository = dataRepository;
   }
 
-  public boolean changeCurrencyExchange (int typeOfExchange, double amount) {
-    //TODO switchCASE 1/2/3 на каждом типе будет своя валюта
-    dataRepository.changeTheRate(currency, amount);
-    return true;
-  }
+//  public boolean changeCurrencyExchange (int typeOfExchange, double amount) {
+//    //TODO switchCASE 1/2/3 на каждом типе будет своя валюта
+//    dataRepository.changeTheRate(currency, amount);
+//    return true;
+//  }
 
   //TODO
 //  public boolean addTheCurrency() {
@@ -33,10 +33,10 @@ public class AdminService {
 //  public boolean DeleteTheCurrency() {
 //    return true;
 //  }
-  public Optional<Transaction> showTransactionsOfUser(int id) {
-    List<Transaction> transactions = dataRepository.showAllTransactions(id);
-    //TODO
-  }
+//  public Optional<Transaction> showTransactionsOfUser(int id) {
+//    List<Transaction> transactions = dataRepository.showAllTransactions(id);
+//    //TODO
+//  }
 
 
 }

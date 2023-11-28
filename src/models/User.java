@@ -7,7 +7,7 @@ public class User {
 
   private String name;
 
-  private final Map<Integer,Integer> accounts = new HashMap<>();
+  private final Map<Integer,Account> accounts = new HashMap<>();
 
   private Role role = Role.USER;
 
@@ -49,8 +49,9 @@ public class User {
     this.name = name;
   }
 
-  public Map<Integer, Integer> getAccounts() {
-    return accounts;
+  public Map<Integer, Account> getAccounts() {
+    Map<Integer,Account> result = new HashMap<>(accounts);
+    return result;
   }
 
   public Role getRole() {
@@ -79,5 +80,21 @@ public class User {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public Map<Integer,Account> getOneAccount(Integer accountID) {
+    Map<Integer,Account> my = new HashMap<>(accounts);
+    Map<Integer,Account> result = new HashMap<>();
+    result.put(accountID, my.get(accountID));
+    return result;
+  }
+
+  public Map<Integer,Account> addNewAccount(Integer accountID, Account newAccount) {
+    accounts.put(accountID,newAccount);
+    return new HashMap<>(accounts);
+  }
+  public Map<Integer,Account> deleteAccount(Integer accountID) {
+    accounts.remove(accountID);
+    return new HashMap<>(accounts);
   }
 }
