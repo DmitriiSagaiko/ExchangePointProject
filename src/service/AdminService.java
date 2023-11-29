@@ -1,11 +1,14 @@
 package service;
 
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import models.Account;
+import models.Transaction;
 import models.User;
 import reposiroty.DataRepository;
 import reposiroty.UserRepository;
@@ -50,14 +53,19 @@ public class AdminService {
     }
   }
 
-  //TODO
-//  public boolean DeleteTheCurrency() {
-//    return true;
-//  }
-//  public Optional<Transaction> showTransactionsOfUser(int id) {
-//    List<Transaction> transactions = dataRepository.showAllTransactions(id);
-//    //TODO
-//  }
+  public List<Transaction> showUsersOperations(int id) {
+    if (id < 1) {
+      return Collections.emptyList();
+    }
+    return dataRepository.showAllTransactionByUserId(id);
+  }
 
 
+  public List<Transaction> showCurrencyOperations(String currency) {
+    if(!dataRepository.getCurrency().containsKey(currency)) {
+      System.out.println("Такой валюты нет");
+      return Collections.emptyList(); // проверка курсов на наличие валюты
+    }
+    return dataRepository.showAllCurrencyOperations(currency);
+  }
 }

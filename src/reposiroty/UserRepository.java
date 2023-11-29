@@ -46,7 +46,6 @@ public class UserRepository {
   }
 
   public Map<Integer, Account> showTheBalance(User activeUser) {
-    //TODO
     return activeUser.getAccounts();
   }
 //  public Map<Integer, Account> showTheBalanceByCurrency(User activeUser, String currency) {

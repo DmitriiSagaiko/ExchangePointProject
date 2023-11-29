@@ -20,7 +20,7 @@ public class Transaction {
 
   public Transaction(User user, Integer accountFrom, TypeOfOperation type, double amount, String currency) {
     this.user = user;
-    this.accountFrom = this.accountFrom;
+    this.accountFrom = accountFrom;
     this.type = type;
     this.amount = amount;
     this.currency = currency;
@@ -29,8 +29,8 @@ public class Transaction {
   public Transaction(User user, Integer accountFrom, Integer accountTo,
       TypeOfOperation type, double amount, String currency) {
     this.user = user;
-    this.accountFrom = this.accountFrom;
-    this.accountTo = this.accountTo;
+    this.accountFrom = accountFrom;
+    this.accountTo = accountTo;
     this.type = type;
     this.amount = amount;
     this.currency = currency;

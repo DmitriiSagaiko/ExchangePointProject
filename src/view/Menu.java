@@ -3,6 +3,7 @@ package view;
 import java.util.Optional;
 import java.util.Scanner;
 import models.Account;
+import models.Role;
 import service.AdminService;
 import service.UserService;
 
@@ -263,14 +264,22 @@ public class Menu {
           }
           break;
           case 4: {
-            adminService.showUsersOperations();
+            System.out.println(userService.users());
+            System.out.println("Введите id желаемого юзера для просмотра его операций");
+            int id = scanner.nextInt();
+            System.out.println(adminService.showUsersOperations(id));
           }
           break;
           case 5: {
+            System.out.println(userService.getCurrency());
+            System.out.println("Введите желаемую валюту для просмотра истории операций");
+            String currency = scanner.nextLine();
             adminService.showCurrencyOperations(currency);
           }
           break;
           case 6: {
+            //TODO
+            System.out.println(Role);
             adminService.assignCashier();
           }
           break;

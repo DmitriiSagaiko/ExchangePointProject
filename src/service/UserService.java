@@ -127,22 +127,6 @@ public class UserService {
     return Collections.emptyList();
   }
 
-//  public Map<Integer, Integer> exchangeCurrency(String from, String to, double amount) {
-//    if (isActiveUser()) {
-//      dataRepository.exchangeCurrency(activeUser, from, to, amount);
-//      return userRepository.exchangeCurrency(activeUser, from, to, amount);
-//    }
-//    return Collections.emptyMap();
-//  }
-
-
-  private double getCurrencyToEur(String currency) {
-    return dataRepository.getTheRate(currency);
-  }
-
-//  private Map<String,Double> getOneCurrency(String currency) {
-//    userRepository.showTheBalanceByCurrency(activeUser,currency);
-//  }
 
   public void showAllAccountsID() {
     if (isActiveUser()) {
@@ -169,6 +153,10 @@ public class UserService {
   public Set<String> getCurrency () {
     Map<String,Double> map = getAllCurrencyAndRate();
     return map.keySet();
+  }
+
+  public Map<Integer,User> users () {
+    return userRepository.getUsers();
   }
 
   public boolean isAdministrator() {
