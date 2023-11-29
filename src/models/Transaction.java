@@ -75,4 +75,21 @@ public class Transaction {
   public void setType(TypeOfOperation type) {
     this.type = type;
   }
+
+  @Override
+  public String toString() {
+    return "Transaction{" +
+        "Date=" + localDateTime.getDayOfMonth() + localDateTime.getMonth() + localDateTime.getYear() + localDateTime.getHour() + localDateTime.getMinute() +
+        ", user=" + user.getName() +
+        ", amount=" + amount +
+        ", accountFrom=" + accountFrom +
+        ", accountTo=" + accountTo +
+        ", type=" + type +
+        ", currency='" + currency + '\'' +
+        '}';
+  }
+
+  public String getCurrency() {
+    return currency;
+  }
 }

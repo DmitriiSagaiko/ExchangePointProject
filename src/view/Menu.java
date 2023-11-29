@@ -30,6 +30,7 @@ public class Menu {
       System.out.println("7. Закрытие счета");
       System.out.println("8. Просмотр истории операций");
       System.out.println("9. Обмен Валюты");
+      System.out.println("10. Выход из личного кабинета пользователя");
       System.out.println("0. Выход из программмы");
       int command = scanner.nextInt();
       scanner.nextLine();
@@ -68,11 +69,15 @@ public class Menu {
         }
         break;
         case 8: {
-
+          showTheHistory();
         }
         break;
         case 9: {
-
+          transfer();
+        }
+        break;
+        case 10: {
+          logout();
         }
         break;
 
@@ -87,23 +92,27 @@ public class Menu {
   }
 
   private void registration() {
-    //TODO правильный формат и обработка ошибок
-    System.out.println("Введите логин в формате");
-    String name = scanner.nextLine();
-    //TODO правильный формат и обработка ошибок
-    System.out.println("Введите пароль в формате");
+    System.out.println("Введите email в формате: dmitsag@gmail.com");
+    System.out.println(
+        "email должен содержать @, точку после @ и длина домена должна быть не короче 2 символов. \n Длина email должна составлять не менее 8 символов");
+    String email = scanner.nextLine();
+
+    System.out.println("Введите пароль в формате '123wqeRTY!'");
+    System.out.println(
+        "Пароль должен быть длинее 7 символов, содержать цифры, нижний и верхний регистр и как минимум 1 спец символ из '!%$@&'");
     String password = scanner.nextLine();
-    userService.userRegistration(name, password);
+
+    System.out.println("Введите ваше Имя и Фамилию");
+    String name = scanner.nextLine();
+    userService.userRegistration(email, password, name);
   }
 
   private void login() {
-    //TODO правильный формат и обработка ошибок
-    System.out.println("Введите логин в формате");
-    String name = scanner.nextLine();
-    //TODO правильный формат и обработка ошибок
-    System.out.println("Введите пароль в формате");
+    System.out.println("Введите email");
+    String email = scanner.nextLine();
+    System.out.println("Введите пароль");
     String password = scanner.nextLine();
-    userService.login(name, password);
+    userService.login(email, password);
   }
 
   private void showTheBalance() {
@@ -169,6 +178,28 @@ public class Menu {
     System.out.println(
         account.isPresent() ? account : "Банковский счет не существует. Его нельзя закрыть");
 
+  }
+
+  private void showTheHistory() {
+
+  }
+
+
+  private void transfer() {
+    userService.checkTheBalance();
+    System.out.println("Введите номер счета списания:");
+    Integer from = scanner.nextInt();
+    System.out.println("Введите номер счета пополнения:");
+    Integer to = scanner.nextInt();
+    System.out.println("Введите сумму перевода");
+    double amount = scanner.nextDouble();
+    System.out.println("Введите валюту");
+    String currency = scanner.nextLine();
+    userService.transfer(from, to, amount, currency);
+  }
+
+  private void logout() {
+    userService.logout();
   }
 
 }

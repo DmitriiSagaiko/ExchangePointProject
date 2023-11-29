@@ -24,25 +24,28 @@ public class UserService {
   }
 
 
-  public Optional<User> userRegistration(String name, String password) {
-    return userRepository.registerUser(name, password);
+  public Optional<User> userRegistration(String email, String password, String name) {
+    return userRepository.registerUser(email, password, name);
   }
 
-  public Optional<User> login(String name, String password) {
-    Optional<User> user = userRepository.login(name, password);
+  public Optional<User> login(String email, String password) {
+    Optional<User> user = userRepository.login(email, password);
     if (user.isPresent()) {
       activeUser = user.get();
+      System.out.println("Добро пожаловать " + activeUser.getName());
       return user;
     }
+    System.out.println("Вы ввели неверно логин или пароль, либо такого юзера не существует");
     return Optional.empty();
   }
 
   public Optional<User> logout() {
     if (isActiveUser()) {
+      System.out.println("Вышел из пользователя " + activeUser.getName());
       activeUser = null;
-      System.out.println("Вышел из пользователя");
       return Optional.empty();
     }
+    System.out.println("Пользователь не произвел вход в личный кабинет");
     return Optional.empty();
   }
 
@@ -84,7 +87,11 @@ public class UserService {
     }
     if (isActiveUser()) {
       dataRepository.transfer(activeUser,from,to,amount,currency);
-      return userRepository.transfer(activeUser,from,to,amount);
+      double rateFrom = dataRepository.getTheRate(currency);
+      Map<Integer,Account> map  = activeUser.getOneAccount(to);
+      String currencyTo = map.get(to).getCurrency();
+      double rateTo = dataRepository.getTheRate(currencyTo);
+      return userRepository.transfer(activeUser,from,to,amount, rateFrom, rateTo);
     }
     return Collections.emptyMap();
   }

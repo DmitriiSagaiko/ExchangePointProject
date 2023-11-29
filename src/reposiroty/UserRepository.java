@@ -1,26 +1,44 @@
 package reposiroty;
 
-import java.util.Collection;
+import exception.EmailValidateException;
+import exception.EmailValidator;
+import exception.PasswordValidateExcepton;
+import exception.PasswordValidator;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import models.Account;
+import models.Role;
 import models.User;
 
 public class UserRepository {
 
-  public static int counter = 99999;
+  private final Map<Integer, User> users = new HashMap<>();
 
-  public Optional<User> registerUser(String name, String password) {
-    //TODO
-    //выполнять все проверки на логины и пароли/ через отдельные методы. В этих методах предусмотреть выброс ошибок
+  public static int counter = 99999;
+  public static int id = 0;
+
+  public Optional<User> registerUser(String email, String password, String name) {
+    try {
+      EmailValidator.validate(email);
+      PasswordValidator.validate(password);
+      User newUser = new User(name, Role.USER,generateIdForUser(),email,password);
+      users.put(newUser.getId(), newUser);
+      System.out.println("Новый юзер успешно создан!");
+      return Optional.of(newUser);
+    } catch (EmailValidateException | PasswordValidateExcepton e) {
+      e.printStackTrace();
+    }
     return Optional.empty();
   }
 
-  public Optional<User> login(String name, String password) {
-    //TODO
-    //Проверка логина и пароля, если такой юзер есть, вернуть его.
+  public Optional<User> login(String email, String password) {
+      for (User user : users.values()) {
+        if (email.equals(user.getEmail()) && password.equals(user.getPassword())) {
+          return Optional.of(user);
+        }
+      }
     return Optional.empty();
   }
 
@@ -110,20 +128,36 @@ public class UserRepository {
     return getCounter();
   }
 
+  private int generateIdForUser() {
+    id++;
+    return getId();
+  }
+
   private static int getCounter() {
     return counter;
   }
+  public static int getId() {
+    return id;
+  }
 
-  public Map<Integer, Account> transfer(User activeUser, Integer from, Integer to, double amount) {
+  public Map<Integer, Account> transfer(User activeUser, Integer from, Integer to, double amount, double rateFrom, double rateTo) {
     Account fromAcc = activeUser.getAccounts().get(from);
     fromAcc.setAmount(fromAcc.getAmount() - amount);
+    String currencyFrom = fromAcc.getCurrency();
 
     Account toAcc = activeUser.getAccounts().get(to);
-    toAcc.setAmount(toAcc.getAmount() + amount);
+    String currencyTo = toAcc.getCurrency();
+    if (currencyFrom.equals(currencyTo)) {
+      toAcc.setAmount(toAcc.getAmount() + amount); // можно if убрать и оставить только else
+    } else {
+      toAcc.setAmount(toAcc.getAmount() + amount*rateTo/rateFrom);
+    }
 
     activeUser.getAccounts().put(from,fromAcc);
     activeUser.getAccounts().put(to,toAcc);
 
     return new HashMap<>(activeUser.getAccounts());
   }
+
+
 }

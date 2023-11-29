@@ -1,10 +1,12 @@
 package reposiroty;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import models.Transaction;
 import models.TypeOfOperation;
 import models.User;
@@ -80,5 +82,24 @@ public class DataRepository {
   public Map<String, Double> getCurrency() {
     return currency.getCurrencyRate();
   }
+
+  private List<Transaction> showTheHistoryByTheCurrency(User activeUser, String currency) {
+    List<Transaction> list = new ArrayList<>(transactions);
+    List<Transaction> result = list.stream()
+        .filter(transaction -> transaction.getUser().equals(activeUser))
+        .filter(transaction -> transaction.getCurrency().equals(currency))
+        .collect(Collectors.toList());
+    return result;
+  }
+
+  private List<Transaction> showTheHistoryOfAllAccounts(User activeUser) {
+    List<Transaction> list = new ArrayList<>(transactions);
+    List<Transaction> result = list.stream()
+        .filter(transaction -> transaction.getUser().equals(activeUser))
+        .filter(transaction -> transaction.getCurrency().equals(currency))
+        .collect(Collectors.toList());
+    return result;
+  }
+
 
 }
