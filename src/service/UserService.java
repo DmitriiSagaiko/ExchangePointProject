@@ -2,10 +2,13 @@ package service;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import models.Account;
+import models.Role;
+import models.Transaction;
 import models.User;
 import reposiroty.DataRepository;
 import reposiroty.UserRepository;
@@ -24,25 +27,28 @@ public class UserService {
   }
 
 
-  public Optional<User> userRegistration(String name, String password) {
-    return userRepository.registerUser(name, password);
+  public Optional<User> userRegistration(String email, String password, String name) {
+    return userRepository.registerUser(email, password, name);
   }
 
-  public Optional<User> login(String name, String password) {
-    Optional<User> user = userRepository.login(name, password);
+  public Optional<User> login(String email, String password) {
+    Optional<User> user = userRepository.login(email, password);
     if (user.isPresent()) {
       activeUser = user.get();
+      System.out.println("Добро пожаловать " + activeUser.getName());
       return user;
     }
+    System.out.println("Вы ввели неверно логин или пароль, либо такого юзера не существует");
     return Optional.empty();
   }
 
   public Optional<User> logout() {
     if (isActiveUser()) {
+      System.out.println("Вышел из пользователя " + activeUser.getName());
       activeUser = null;
-      System.out.println("Вышел из пользователя");
       return Optional.empty();
     }
+    System.out.println("Пользователь не произвел вход в личный кабинет");
     return Optional.empty();
   }
 
@@ -84,7 +90,11 @@ public class UserService {
     }
     if (isActiveUser()) {
       dataRepository.transfer(activeUser,from,to,amount,currency);
-      return userRepository.transfer(activeUser,from,to,amount);
+      double rateFrom = dataRepository.getTheRate(currency);
+      Map<Integer,Account> map  = activeUser.getOneAccount(to);
+      String currencyTo = map.get(to).getCurrency();
+      double rateTo = dataRepository.getTheRate(currencyTo);
+      return userRepository.transfer(activeUser,from,to,amount, rateFrom, rateTo);
     }
     return Collections.emptyMap();
   }
@@ -104,29 +114,19 @@ public class UserService {
     return Optional.empty();
   }
 
-  public Optional<String[]> showTheHistory(int typeOfOperation) {
+  public List<Transaction> showTheHistory(int typeOfOperation, String currency) {
     if (isActiveUser()) {
-      return dataRepository.showTheHistory(typeOfOperation, activeUser);
+      return dataRepository.showTheHistory(typeOfOperation, activeUser, currency);
     }
-    return Optional.empty();
+    return Collections.emptyList();
+  }
+  public List<Transaction> showTheHistory(int typeOfOperation) {
+    if (isActiveUser()) {
+      return dataRepository.showTheHistory(typeOfOperation, activeUser, "NULL");
+    }
+    return Collections.emptyList();
   }
 
-//  public Map<Integer, Integer> exchangeCurrency(String from, String to, double amount) {
-//    if (isActiveUser()) {
-//      dataRepository.exchangeCurrency(activeUser, from, to, amount);
-//      return userRepository.exchangeCurrency(activeUser, from, to, amount);
-//    }
-//    return Collections.emptyMap();
-//  }
-
-
-  private double getCurrencyToEur(String currency) {
-    return dataRepository.getTheRate(currency);
-  }
-
-//  private Map<String,Double> getOneCurrency(String currency) {
-//    userRepository.showTheBalanceByCurrency(activeUser,currency);
-//  }
 
   public void showAllAccountsID() {
     if (isActiveUser()) {
@@ -153,6 +153,17 @@ public class UserService {
   public Set<String> getCurrency () {
     Map<String,Double> map = getAllCurrencyAndRate();
     return map.keySet();
+  }
+
+  public Map<Integer,User> users () {
+    return userRepository.getUsers();
+  }
+
+  public boolean isAdministrator() {
+    if (isActiveUser()) {
+      return activeUser.getRole().equals(Role.ADMINISTRATOR);
+    }
+    return false;
   }
 
 

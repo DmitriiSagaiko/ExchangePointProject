@@ -20,7 +20,7 @@ public class Transaction {
 
   public Transaction(User user, Integer accountFrom, TypeOfOperation type, double amount, String currency) {
     this.user = user;
-    this.accountFrom = this.accountFrom;
+    this.accountFrom = accountFrom;
     this.type = type;
     this.amount = amount;
     this.currency = currency;
@@ -29,8 +29,8 @@ public class Transaction {
   public Transaction(User user, Integer accountFrom, Integer accountTo,
       TypeOfOperation type, double amount, String currency) {
     this.user = user;
-    this.accountFrom = this.accountFrom;
-    this.accountTo = this.accountTo;
+    this.accountFrom = accountFrom;
+    this.accountTo = accountTo;
     this.type = type;
     this.amount = amount;
     this.currency = currency;
@@ -74,5 +74,22 @@ public class Transaction {
 
   public void setType(TypeOfOperation type) {
     this.type = type;
+  }
+
+  @Override
+  public String toString() {
+    return "Transaction{" +
+        "Date=" + localDateTime.getDayOfMonth() + localDateTime.getMonth() + localDateTime.getYear() + localDateTime.getHour() + localDateTime.getMinute() +
+        ", user=" + user.getName() +
+        ", amount=" + amount +
+        ", accountFrom=" + accountFrom +
+        ", accountTo=" + accountTo +
+        ", type=" + type +
+        ", currency='" + currency + '\'' +
+        '}';
+  }
+
+  public String getCurrency() {
+    return currency;
   }
 }
