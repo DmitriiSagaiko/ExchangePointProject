@@ -1,6 +1,7 @@
 package reposiroty;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,31 @@ import models.TypeOfOperation;
 import models.User;
 
 public class DataRepository {
+
+  public Map<String, Double> changeTheRate(String currency, Double amount) {
+    Map<String,Double> result = new HashMap<>();
+    getCurrency().put(currency,amount);
+    result.put(currency,amount);
+    return result;
+  }
+
+  public Map<String, Double> addTheCurrency(String currency, Double rate) {
+    if(getCurrency().containsKey(currency)) {
+      System.out.println("Такая валюта уже есть");
+      return Collections.emptyMap();
+    }
+    if (rate <= 0 ) {
+      System.out.println("Некорректный курс валюты " + currency);
+      return Collections.emptyMap();
+    }
+    getCurrency().put(currency,rate);
+    return new HashMap<>(getCurrency());
+  }
+
+  public Map<String, Double> deleteTheCurrency(String currency) {
+    getCurrency().remove(currency);
+    return new HashMap<>(getCurrency());
+  }
 
   public static class Currency {
 
@@ -68,10 +94,14 @@ public class DataRepository {
     return transactions.get(transactions.size()-1); // возвращаем последнюю транзакцию
   }
 
-  public Optional<String[]> showTheHistory(int typeOfOperation, User activeUser) {
-    //TODO в зависимости от типа операции создать 2 доп метода Private и вызывать их
-    //история по валюте/ по всем счетам
-    return Optional.empty();
+  public List<Transaction> showTheHistory(int typeOfOperation, User activeUser, String currency) {
+      if (typeOfOperation == 1) {
+        return showTheHistoryByTheCurrency(activeUser,currency);
+      } else if (typeOfOperation == 2) {
+        return showTheHistoryOfAllAccounts(activeUser);
+      }
+    System.out.println("Нет такого вида операции. Попробуйте еще раз");
+    return Collections.emptyList();
   }
 
 //  public Transaction exchangeCurrency(User activeUser, Integer from, Integer to, double amount) {
@@ -96,7 +126,6 @@ public class DataRepository {
     List<Transaction> list = new ArrayList<>(transactions);
     List<Transaction> result = list.stream()
         .filter(transaction -> transaction.getUser().equals(activeUser))
-        .filter(transaction -> transaction.getCurrency().equals(currency))
         .collect(Collectors.toList());
     return result;
   }

@@ -31,6 +31,7 @@ public class Menu {
       System.out.println("8. Просмотр истории операций");
       System.out.println("9. Обмен Валюты");
       System.out.println("10. Выход из личного кабинета пользователя");
+      System.out.println("11 Команды администратора");
       System.out.println("0. Выход из программмы");
       int command = scanner.nextInt();
       scanner.nextLine();
@@ -80,13 +81,17 @@ public class Menu {
           logout();
         }
         break;
+        case 11: {
+          logout();
+        }
+        break;
 
       }
     }
   }
 
 
-  private void exit() {
+  private void exit() { // 0
     System.out.println("Завершаю программу");
     System.exit(0);
   }
@@ -105,7 +110,7 @@ public class Menu {
     System.out.println("Введите ваше Имя и Фамилию");
     String name = scanner.nextLine();
     userService.userRegistration(email, password, name);
-  }
+  } //1
 
   private void login() {
     System.out.println("Введите email");
@@ -113,7 +118,7 @@ public class Menu {
     System.out.println("Введите пароль");
     String password = scanner.nextLine();
     userService.login(email, password);
-  }
+  } //2
 
   private void showTheBalance() {
     userService.showAllAccountsID();
@@ -139,7 +144,7 @@ public class Menu {
 
     }
 
-  }
+  } //3
 
   private void deposit() {
     userService.showAllAccountsID();
@@ -148,7 +153,7 @@ public class Menu {
     System.out.println("Введите сумму пополнения");
     double sum = scanner.nextDouble();
     userService.deposit(accountID, sum);
-  }
+  } //4
 
   private void withdraw() {
     userService.showAllAccountsID();
@@ -157,7 +162,7 @@ public class Menu {
     System.out.println("Введите сумму снятия");
     double sum = scanner.nextDouble();
     userService.withdraw(accountID, sum);
-  }
+  } //5
 
   private void openNewAccount() {
     System.out.println(userService.getCurrency());
@@ -167,7 +172,7 @@ public class Menu {
     double sum = scanner.nextDouble();
     Optional<Account> account = userService.openNewAccount(currency, sum);
     System.out.println(account.isPresent() ? account : " Не удалось создать новый аккаунт");
-  }
+  } //6
 
   private void closeAccount() {
     System.out.println("У тебя есть такие счета:");
@@ -178,11 +183,21 @@ public class Menu {
     System.out.println(
         account.isPresent() ? account : "Банковский счет не существует. Его нельзя закрыть");
 
-  }
+  } //7
 
   private void showTheHistory() {
-
-  }
+    System.out.println("Введите желаемый тип операции");
+    System.out.println("1 - просмотр по валюте");
+    System.out.println("2 - просмотр всех операций на счете");
+    int type = scanner.nextInt();
+    if (type == 1) {
+      System.out.println("Введите тип желаемой валюты");
+      String currency = scanner.nextLine();
+      userService.showTheHistory(type, currency);
+    } else if (type == 2) {
+      userService.showTheHistory(type);
+    }
+  } //8
 
 
   private void transfer() {
@@ -196,10 +211,77 @@ public class Menu {
     System.out.println("Введите валюту");
     String currency = scanner.nextLine();
     userService.transfer(from, to, amount, currency);
-  }
+  } //9
 
   private void logout() {
     userService.logout();
-  }
+  } //10
 
+  private void showOptionsForAdmin() {
+    if (userService.isAdministrator()) {
+
+      while (true) {
+        System.out.println("1 - Изменить курс валюты");
+        System.out.println("2 - Добавить валюту");
+        System.out.println("3 - Удалить валюту");
+        System.out.println("4 - Просмотреть операции пользователя");
+        System.out.println("5 - Просмотреть операции по валюте");
+        System.out.println("6 - Назначить другого пользователя кассиром");
+        System.out.println("7 - выйти в предыдущее меню");
+        int command = scanner.nextInt();
+        scanner.nextLine();
+        switch (command) {
+
+          case 1: {
+            System.out.println(userService.getCurrency());
+            System.out.println("Введите желаемую валюту. Изменить курс рубля нельзя");
+            String currency = scanner.nextLine();
+            System.out.println("Введите желаемый курс выбранной валюты");
+            Double rate = scanner.nextDouble();
+            System.out.println(
+                "Изменения прошли успешно: " + adminService.changeCurrencyExchange(currency, rate));
+          }
+          break;
+          case 2: {
+            System.out.println(userService.getCurrency());
+            System.out.println("Введите желаемую валюту, которой нет в списке");
+            String currency = scanner.nextLine();
+            System.out.println(
+                "Введите желаемый курс выбранной валюты к рублю. Например 1 USD = 100 RUB те желаемый курс 100");
+            Double rate = scanner.nextDouble();
+            System.out.println(
+                "Валюта " + currency + " была добавлена :" + adminService.addTheCurrency(currency,
+                    rate));
+          }
+          break;
+          case 3: {
+            System.out.println(userService.getCurrency());
+            System.out.println("Введите желаемую валюту из списка для удаления ");
+            String currency = scanner.nextLine();
+            System.out.println(
+                "удалил валюту " + currency + " :" + adminService.deleteTheCurrency(currency));
+          }
+          break;
+          case 4: {
+            adminService.showUsersOperations();
+          }
+          break;
+          case 5: {
+            adminService.showCurrencyOperations(currency);
+          }
+          break;
+          case 6: {
+            adminService.assignCashier();
+          }
+          break;
+          case 7: {
+            break;
+          }
+        }
+      }
+    } else {
+      System.out.println("Вы не Администратор. Для вас этот функционал закрыт");
+    }
+  }
 }
+

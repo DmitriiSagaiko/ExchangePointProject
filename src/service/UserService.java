@@ -2,10 +2,13 @@ package service;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import models.Account;
+import models.Role;
+import models.Transaction;
 import models.User;
 import reposiroty.DataRepository;
 import reposiroty.UserRepository;
@@ -111,11 +114,17 @@ public class UserService {
     return Optional.empty();
   }
 
-  public Optional<String[]> showTheHistory(int typeOfOperation) {
+  public List<Transaction> showTheHistory(int typeOfOperation, String currency) {
     if (isActiveUser()) {
-      return dataRepository.showTheHistory(typeOfOperation, activeUser);
+      return dataRepository.showTheHistory(typeOfOperation, activeUser, currency);
     }
-    return Optional.empty();
+    return Collections.emptyList();
+  }
+  public List<Transaction> showTheHistory(int typeOfOperation) {
+    if (isActiveUser()) {
+      return dataRepository.showTheHistory(typeOfOperation, activeUser, "NULL");
+    }
+    return Collections.emptyList();
   }
 
 //  public Map<Integer, Integer> exchangeCurrency(String from, String to, double amount) {
@@ -160,6 +169,13 @@ public class UserService {
   public Set<String> getCurrency () {
     Map<String,Double> map = getAllCurrencyAndRate();
     return map.keySet();
+  }
+
+  public boolean isAdministrator() {
+    if (isActiveUser()) {
+      return activeUser.getRole().equals(Role.ADMINISTRATOR);
+    }
+    return false;
   }
 
 

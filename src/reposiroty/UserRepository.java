@@ -6,8 +6,11 @@ import exception.PasswordValidateExcepton;
 import exception.PasswordValidator;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import models.Account;
 import models.Role;
 import models.User;
@@ -159,5 +162,21 @@ public class UserRepository {
     return new HashMap<>(activeUser.getAccounts());
   }
 
+  public Map<Integer, User> getUsers() {
+    return users;
+  }
 
+  public Set<Account> getAllUsersAccounts () {
+    Map<Integer, User> input = new HashMap<>(getUsers());
+
+    Set<Entry<Integer, User>> userSet = input.entrySet();
+
+    Set<Account> accounts = new HashSet<>();
+
+    for (Entry<Integer, User> entry : userSet ) {
+      Map<Integer,Account> map = entry.getValue().getAccounts();
+      accounts.addAll(map.values());
+    }
+    return accounts;
+  }
 }
