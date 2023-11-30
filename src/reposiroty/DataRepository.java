@@ -14,6 +14,10 @@ import models.User;
 
 public class DataRepository {
 
+  public DataRepository() {
+    feelTheRate();
+  }
+
   public Map<String, Double> changeTheRate(String currency, Double amount) {
     Map<String, Double> result = new HashMap<>();
     getCurrency().put(currency, amount);
@@ -64,18 +68,10 @@ public class DataRepository {
     currency.currencyRate.put("RUB", 1.0);
   }
 
-  public double getTheRate(String input) {
-    return currency.getCurrencyRate().get(input);
+  public Optional<Double> getTheRate(String input) {
+    return Optional.ofNullable(currency.getCurrencyRate().get(input));
   }
 
-//  public boolean changeTheRate(String input, double amount) {
-//    currency.currencyRate.put(input,amount);
-//    return true;
-//  }
-
-  public List<Transaction> showAllTransactions(int id) {
-    return transactions;
-  }
 
 
   public Transaction deposit(User activeUser, Integer accountNumber, double amount, String value) {
