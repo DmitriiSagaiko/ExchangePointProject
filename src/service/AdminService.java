@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import models.Account;
+import models.Role;
 import models.Transaction;
 import models.User;
 import reposiroty.DataRepository;
@@ -67,5 +68,14 @@ public class AdminService {
       return Collections.emptyList(); // проверка курсов на наличие валюты
     }
     return dataRepository.showAllCurrencyOperations(currency);
+  }
+
+  public boolean assignCashier(User user) {
+    if (user.getRole().equals(Role.ADMINISTRATOR)) {
+      System.out.println("Нельзя из Администратора сделать кассира!");
+      return false;
+    }
+    user.setRole(Role.CASHOFFICER);
+    return true;
   }
 }

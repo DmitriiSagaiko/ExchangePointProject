@@ -3,16 +3,16 @@ package view;
 import java.util.Optional;
 import java.util.Scanner;
 import models.Account;
-import models.Role;
+import models.User;
 import service.AdminService;
 import service.UserService;
 
 public class Menu {
 
-  private AdminService adminService;
-  private UserService userService;
+  private final AdminService adminService;
+  private final UserService userService;
 
-  private Scanner scanner = new Scanner(System.in);
+  private final Scanner scanner = new Scanner(System.in);
 
   public Menu(AdminService adminService, UserService userService) {
     this.adminService = adminService;
@@ -20,7 +20,6 @@ public class Menu {
   }
 
   public void run() {
-//    Scanner scanner = new Scanner(System.in);
     while (true) {
       System.out.println("1. Регистрация пользователя");
       System.out.println("2. Вход в личный кабинет");
@@ -83,7 +82,7 @@ public class Menu {
         }
         break;
         case 11: {
-          logout();
+          showOptionsForAdmin();
         }
         break;
 
@@ -278,9 +277,11 @@ public class Menu {
           }
           break;
           case 6: {
-            //TODO
-            System.out.println(Role);
-            adminService.assignCashier();
+            System.out.println(userService.users());
+            System.out.println("Введите id юзера, который будет кассиром");
+            Integer id = scanner.nextInt();
+            User userForCash = userService.users().get(id);
+            adminService.assignCashier(userForCash);
           }
           break;
           case 7: {
