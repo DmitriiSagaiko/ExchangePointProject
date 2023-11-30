@@ -1,8 +1,10 @@
 package view;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
 import models.Account;
+import models.Transaction;
 import models.User;
 import service.AdminService;
 import service.UserService;
@@ -12,7 +14,7 @@ public class Menu {
   private final AdminService adminService;
   private final UserService userService;
 
-  private final Scanner scanner = new Scanner(System.in);
+  private final Scanner scanner = new Scanner(System.in).useLocale(Locale.US);
 
   public Menu(AdminService adminService, UserService userService) {
     this.adminService = adminService;
@@ -121,96 +123,122 @@ public class Menu {
   } //2
 
   private void showTheBalance() {
-    userService.showAllAccountsID();
-    System.out.println("Хотите посмотреть на конкретном счете - нажмите 1");
-    System.out.println("Хотите посмотреть на всех счетах - нажмите 2");
-    System.out.println("Назад - нажмите 3");
-    int command = scanner.nextInt();
-    scanner.nextLine();
-    switch (command) {
-      case 1: {
-        System.out.println("Введите номер счета");
-        Integer accountID = scanner.nextInt();
-        System.out.println(userService.checkTheBalance(accountID));
-      }
-      break;
-      case 2: {
-        System.out.println(userService.checkTheBalance());
-      }
-      break;
-      case 3: {
+    if(!userService.isActiveUser()) {
+      return;
+    }
+    if(userService.showAllAccountsID()) {
+      System.out.println("Хотите посмотреть на конкретном счете - нажмите 1");
+      System.out.println("Хотите посмотреть на всех счетах - нажмите 2");
+      System.out.println("Назад - нажмите 3");
+      int command = scanner.nextInt();
+      scanner.nextLine();
+      switch (command) {
+        case 1: {
+          System.out.println("Введите номер счета");
+          Integer accountID = scanner.nextInt();
+          System.out.println(userService.checkTheBalance(accountID));
+        }
         break;
-      }
+        case 2: {
+          System.out.println(userService.checkTheBalance());
+        }
+        break;
+        case 3: {
+          break;
+        }
 
+      }
     }
 
   } //3
 
   private void deposit() {
-    userService.showAllAccountsID();
-    System.out.println("Введите номер счета");
-    Integer accountID = scanner.nextInt();
-    System.out.println("Введите сумму пополнения");
-    double sum = scanner.nextDouble();
-    userService.deposit(accountID, sum);
+    if(!userService.isActiveUser()) {
+      return;
+    }
+    if (userService.showAllAccountsID()) {
+      System.out.println("Введите номер счета");
+      Integer accountID = scanner.nextInt();
+      System.out.println("Введите сумму пополнения");
+      double sum = scanner.nextDouble();
+      userService.deposit(accountID, sum);
+    }
   } //4
 
   private void withdraw() {
-    userService.showAllAccountsID();
-    System.out.println("Введите номер счета");
-    Integer accountID = scanner.nextInt();
-    System.out.println("Введите сумму снятия");
-    double sum = scanner.nextDouble();
-    userService.withdraw(accountID, sum);
+    if(!userService.isActiveUser()) {
+      return;
+    }
+    if(userService.showAllAccountsID()) {
+      System.out.println("Введите номер счета");
+      Integer accountID = scanner.nextInt();
+      System.out.println("Введите сумму снятия");
+      double sum = scanner.nextDouble();
+      userService.withdraw(accountID, sum);
+    }
   } //5
 
   private void openNewAccount() {
-    System.out.println(userService.getCurrency());
+    if(!userService.isActiveUser()) {
+      return;
+    }
+    System.out.println("Доступные валюты: " + userService.getCurrency());
     System.out.println("Введите тип желаемой валюты");
     String currency = scanner.nextLine();
     System.out.println("Введите сумму открытия счета");
     double sum = scanner.nextDouble();
     Optional<Account> account = userService.openNewAccount(currency, sum);
-    System.out.println(account.isPresent() ? account : " Не удалось создать новый аккаунт");
+    System.out.println(account.isPresent() ? "Открытие счета прошло успешно. Номер вашего нового счета: " + account.get().getAccountNumber() : " Не удалось создать новый счет");
   } //6
 
   private void closeAccount() {
+    if(!userService.isActiveUser()) {
+      return;
+    }
     System.out.println("У тебя есть такие счета:");
-    userService.showAllAccountsID();
-    System.out.println("Введите номер закрываемого счета");
-    Integer accountID = scanner.nextInt();
-    Optional<Account> account = userService.closeAccount(accountID);
-    System.out.println(
-        account.isPresent() ? account : "Банковский счет не существует. Его нельзя закрыть");
-
+    if (userService.showAllAccountsID()) {
+      System.out.println("Введите номер закрываемого счета");
+      Integer accountID = scanner.nextInt();
+      Optional<Account> account = userService.closeAccount(accountID);
+      if (account.isEmpty()) return;
+      System.out.println(
+          account.isPresent() ? "Счет " +account.get().getAccountNumber() + " был успешно закрыт!" : "Банковский счет не существует. Его нельзя закрыть");
+    }
   } //7
 
   private void showTheHistory() {
-    System.out.println("Введите желаемый тип операции");
+    if(!userService.isActiveUser()) {
+      return;
+    }
     System.out.println("1 - просмотр по валюте");
     System.out.println("2 - просмотр всех операций на счете");
     int type = scanner.nextInt();
+    scanner.nextLine();
     if (type == 1) {
       System.out.println("Введите тип желаемой валюты");
       String currency = scanner.nextLine();
-      userService.showTheHistory(type, currency);
+      System.out.println(userService.showTheHistory(type, currency));
     } else if (type == 2) {
-      userService.showTheHistory(type);
+      userService.showTheHistory(type).forEach(System.out::println);
     }
   } //8
 
 
   private void transfer() {
-    userService.checkTheBalance();
+    if(userService.checkTheBalance().isEmpty()) {
+      System.out.println("У вас нет открытых счетов");
+      return;
+    }
+    System.out.println(userService.checkTheBalance());
     System.out.println("Введите номер счета списания:");
     Integer from = scanner.nextInt();
+    scanner.nextLine();
     System.out.println("Введите номер счета пополнения:");
     Integer to = scanner.nextInt();
     System.out.println("Введите сумму перевода");
+    scanner.nextLine();
     double amount = scanner.nextDouble();
-    System.out.println("Введите валюту");
-    String currency = scanner.nextLine();
-    userService.transfer(from, to, amount, currency);
+    System.out.println(userService.transfer(from, to, amount));
   } //9
 
   private void logout() {
@@ -218,8 +246,11 @@ public class Menu {
   } //10
 
   private void showOptionsForAdmin() {
+    if(!userService.isActiveUser()) {
+      return;
+    }
     if (userService.isAdministrator()) {
-
+      inner:
       while (true) {
         System.out.println("1 - Изменить курс валюты");
         System.out.println("2 - Добавить валюту");
@@ -273,19 +304,19 @@ public class Menu {
             System.out.println(userService.getCurrency());
             System.out.println("Введите желаемую валюту для просмотра истории операций");
             String currency = scanner.nextLine();
-            adminService.showCurrencyOperations(currency);
+            System.out.println(adminService.showCurrencyOperations(currency));
           }
           break;
           case 6: {
             System.out.println(userService.users());
             System.out.println("Введите id юзера, который будет кассиром");
             Integer id = scanner.nextInt();
-            User userForCash = userService.users().get(id);
+            Optional<User> userForCash = Optional.ofNullable(userService.users().get(id));
             adminService.assignCashier(userForCash);
           }
           break;
           case 7: {
-            break;
+            break inner;
           }
         }
       }

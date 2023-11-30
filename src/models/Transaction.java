@@ -85,8 +85,8 @@ public class Transaction {
         ", accountFrom=" + accountFrom +
         ", accountTo=" + accountTo +
         ", type=" + type +
-        ", currency='" + currency + '\'' +
-        '}';
+        ", currency='" + currency  +
+        '}'+ "\n";
   }
 
   public String getCurrency() {

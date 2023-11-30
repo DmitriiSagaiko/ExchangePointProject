@@ -3,8 +3,6 @@ package service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import models.Account;
@@ -70,7 +68,12 @@ public class AdminService {
     return dataRepository.showAllCurrencyOperations(currency);
   }
 
-  public boolean assignCashier(User user) {
+  public boolean assignCashier(Optional<User> userOptional) {
+    if (userOptional.isEmpty()) {
+      System.out.println("такого юзера нет!");
+      return false;
+    }
+    User user = userOptional.get();
     if (user.getRole().equals(Role.ADMINISTRATOR)) {
       System.out.println("Нельзя из Администратора сделать кассира!");
       return false;

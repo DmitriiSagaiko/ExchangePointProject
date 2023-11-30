@@ -17,6 +17,10 @@ import models.User;
 
 public class UserRepository {
 
+  public UserRepository() {
+    init();
+  }
+
   private final Map<Integer, User> users = new HashMap<>();
 
   public static int counter = 99999;
@@ -26,7 +30,20 @@ public class UserRepository {
     try {
       EmailValidator.validate(email);
       PasswordValidator.validate(password);
-      User newUser = new User(name, Role.USER,generateIdForUser(),email,password);
+      User newUser = new User(name, Role.USER, generateIdForUser(), email, password);
+      users.put(newUser.getId(), newUser);
+      System.out.println("Новый юзер успешно создан!");
+      return Optional.of(newUser);
+    } catch (EmailValidateException | PasswordValidateExcepton e) {
+      e.printStackTrace();
+    }
+    return Optional.empty();
+  }
+  public Optional<User> registerUser(String email, String password, String name, int a) {
+    try {
+      EmailValidator.validate(email);
+      PasswordValidator.validate(password);
+      User newUser = new User(name, Role.ADMINISTRATOR, generateIdForUser(), email, password);
       users.put(newUser.getId(), newUser);
       System.out.println("Новый юзер успешно создан!");
       return Optional.of(newUser);
@@ -37,39 +54,29 @@ public class UserRepository {
   }
 
   public Optional<User> login(String email, String password) {
-      for (User user : users.values()) {
-        if (email.equals(user.getEmail()) && password.equals(user.getPassword())) {
-          return Optional.of(user);
-        }
+    for (User user : users.values()) {
+      if (email.equals(user.getEmail()) && password.equals(user.getPassword())) {
+        return Optional.of(user);
       }
+    }
     return Optional.empty();
   }
 
   public Map<Integer, Account> showTheBalance(User activeUser) {
     return activeUser.getAccounts();
   }
-//  public Map<Integer, Account> showTheBalanceByCurrency(User activeUser, String currency) {
-//    Map<Integer, Account> map  = activeUser.getAccounts();
-//    if(map.isEmpty()) {
-//      System.out.println("У вас нет счетов!");
-//      return Collections.emptyMap();
-//    }
-//    Map<Integer, Account> result  = new HashMap<>();
-//    result.put(currency, map.get(currency));
-//
-//    return activeUser.getAccounts();
-//  }
 
   public Map<Integer, Account> deposit(User activeUser, Integer accountNumber, double amount) {
     if (isUserHasAccount(activeUser, accountNumber)) {
       Account account = activeUser.getAccounts().get(accountNumber);
       account.setAmount(account.getAmount() + amount);
       activeUser.getAccounts().put(accountNumber, account);
-      System.out.println("Счет успешно пополнен на сумму :" + amount);
+      System.out.println("Счет успешно пополнен на сумму :" + amount +" " + account.getCurrency());
       System.out.println("На счету осталось:" + account.getAmount() + " " + account.getCurrency());
       return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
     }
-    Account newAccount = openNewAccount(activeUser, "RUB", amount); // создается счет по дефолту в рублях
+    Account newAccount = openNewAccount(activeUser, "RUB",
+        amount); // создается счет по дефолту в рублях
     activeUser.getAccounts().put(newAccount.getAccountNumber(), newAccount);
     return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
   }
@@ -80,7 +87,7 @@ public class UserRepository {
         Account account = activeUser.getAccounts().get(accountNumber);
         account.setAmount(account.getAmount() - amount);
         activeUser.getAccounts().put(accountNumber, account);
-        System.out.println("Деньги со счета успешно сняты :" + amount);
+        System.out.println("Деньги со счета успешно сняты :" + amount +" " + account.getCurrency());
         System.out.println(
             "На счету осталось:" + account.getAmount() + " " + account.getCurrency());
         return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
@@ -110,11 +117,6 @@ public class UserRepository {
     return null;
   }
 
-//  public Map<Integer, Integer> exchangeCurrency(User activeUser, Integer from, Integer to,
-//      double amount) {
-//    //выполняется проверка на возможность такого обмена
-//    //TODO. Берется приватный метод пересчета и в мапе меняется значение по двум валютам на величину amount;
-//  }
 
   private boolean isUserHasAccount(User activeUser, Integer accountNumber) {
     return activeUser.getAccounts().containsKey(accountNumber);
@@ -138,11 +140,13 @@ public class UserRepository {
   private static int getCounter() {
     return counter;
   }
+
   public static int getId() {
     return id;
   }
 
-  public Map<Integer, Account> transfer(User activeUser, Integer from, Integer to, double amount, double rateFrom, double rateTo) {
+  public Map<Integer, Account> transfer(User activeUser, Integer from, Integer to, double amount,
+      double rateFrom, double rateTo) {
     Account fromAcc = activeUser.getAccounts().get(from);
     fromAcc.setAmount(fromAcc.getAmount() - amount);
     String currencyFrom = fromAcc.getCurrency();
@@ -152,11 +156,11 @@ public class UserRepository {
     if (currencyFrom.equals(currencyTo)) {
       toAcc.setAmount(toAcc.getAmount() + amount); // можно if убрать и оставить только else
     } else {
-      toAcc.setAmount(toAcc.getAmount() + amount*rateTo/rateFrom);
+      toAcc.setAmount(toAcc.getAmount() + amount * rateFrom / rateTo);
     }
 
-    activeUser.getAccounts().put(from,fromAcc);
-    activeUser.getAccounts().put(to,toAcc);
+    activeUser.getAccounts().put(from, fromAcc);
+    activeUser.getAccounts().put(to, toAcc);
 
     return new HashMap<>(activeUser.getAccounts());
   }
@@ -165,17 +169,23 @@ public class UserRepository {
     return users;
   }
 
-  public Set<Account> getAllUsersAccounts () {
+  public Set<Account> getAllUsersAccounts() {
     Map<Integer, User> input = new HashMap<>(getUsers());
 
     Set<Entry<Integer, User>> userSet = input.entrySet();
 
     Set<Account> accounts = new HashSet<>();
 
-    for (Entry<Integer, User> entry : userSet ) {
-      Map<Integer,Account> map = entry.getValue().getAccounts();
+    for (Entry<Integer, User> entry : userSet) {
+      Map<Integer, Account> map = entry.getValue().getAccounts();
       accounts.addAll(map.values());
     }
     return accounts;
+  }
+
+  private void init() {
+    registerUser("user1@mail.ru", "User123$", "Андрей Юзеровских");
+    registerUser("user2@mail.ru", "User123$", "Максим Юзеровских");
+    registerUser("user3@mail.ru", "User123$", "Антон Юзеровских", 100);
   }
 }
