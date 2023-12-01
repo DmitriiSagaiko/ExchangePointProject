@@ -15,20 +15,20 @@ public class Main {
     UserService userService = new UserService(userRepository, dataRepository);
 
     //Для наладки
-//    userService.login("user3@mail.ru", "User123$");
-//    userService.openNewAccount("EUR",1000);
-//    userService.openNewAccount("RUB",100000);
-//    userService.openNewAccount("USD",500);
-//    userService.openNewAccount("USD",1000);
-//    userService.withdraw(100003, 500);
-//    userService.withdraw(100003, 200);
-//    userService.deposit(100003, 1000);
-//    userService.deposit(100001, 200);
-//    userService.deposit(100001, 200);
-//    userService.withdraw(100001, 100);
-//    userService.transfer(100000,100001,50);
-//    userService.transfer(100000,100001,50);
-//    userService.logout();
+    userService.login("user3@mail.ru", "User123$");
+    userService.openNewAccount("EUR",1000);
+    userService.openNewAccount("RUB",100000);
+    userService.openNewAccount("USD",500);
+    userService.openNewAccount("USD",1000);
+    userService.withdraw(200003, 500);
+    userService.withdraw(100003, 200);
+    userService.deposit(100003, 1000);
+    userService.deposit(100001, 200);
+    userService.deposit(100001, 200);
+    userService.withdraw(100001, 100);
+    userService.transfer(100000,100001,50);
+    userService.transfer(100000,100001,50);
+    userService.logout();
 //
 //    userService.login("user1@mail.ru", "User123$");
 //    userService.openNewAccount("EUR",1000);

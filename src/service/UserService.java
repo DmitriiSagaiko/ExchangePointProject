@@ -45,8 +45,9 @@ public class UserService {
   public Optional<User> logout() {
     if (isActiveUser()) {
       System.out.println("Вышел из пользователя " + activeUser.getName());
+      Optional<User> result = Optional.ofNullable(activeUser);
       activeUser = null;
-      return Optional.empty();
+      return result;
     }
     System.out.println("Пользователь не произвел вход в личный кабинет");
     return Optional.empty();
@@ -67,7 +68,12 @@ public class UserService {
   }
 
   public Map<Integer, Account> deposit(Integer accountNumber, double amount) {
+    if (amount <=0) {
+      System.out.println("Нельзя внести отрицательную и нулевую сумму!");
+      return Collections.emptyMap();
+    }
     if (isActiveUser()) {
+      //TODO fix NPE
       String currency = activeUser.getOneAccount(accountNumber).get(accountNumber).getCurrency();
       dataRepository.deposit(activeUser, accountNumber, amount, currency);
       return userRepository.deposit(activeUser, accountNumber, amount);
@@ -76,7 +82,12 @@ public class UserService {
   }
 
   public Map<Integer, Account> withdraw(Integer accountNumber, double amount) {
+    if (amount <=0) {
+      System.out.println("Нельзя снять отрицательную и нулевую сумму!");
+      return Collections.emptyMap();
+    }
     if (isActiveUser()) {
+      //TODO fix NPE
       String currency = activeUser.getOneAccount(accountNumber).get(accountNumber).getCurrency();
       dataRepository.withdraw(activeUser, accountNumber, amount, currency);
       return userRepository.withdraw(activeUser, accountNumber, amount);
@@ -102,17 +113,17 @@ public class UserService {
       String currency = fromAcc.getCurrency();
       dataRepository.transfer(activeUser, from, to, amount, currency);
       Optional<Double> rateFrom = dataRepository.getTheRate(currency);
-      if(rateFrom.isEmpty()) {
-        System.out.println("Нельзя сделать перевод из выбранной валюты. Она не существует или счет открыт в другой валюте");
-        return Collections.emptyMap();
-      }
+//      if(rateFrom.isEmpty()) {
+//        System.out.println("Нельзя сделать перевод из выбранной валюты. Она не существует или счет открыт в другой валюте");
+//        return Collections.emptyMap();
+//      }
       Map<Integer, Account> map = activeUser.getOneAccount(to);
       String currencyTo = map.get(to).getCurrency();
       Optional<Double> rateTo = dataRepository.getTheRate(currencyTo);
-      if(rateTo.isEmpty()) {
-        System.out.println("Нельзя перевести на такой счет, нет нужного курса");
-        return Collections.emptyMap();
-      }
+//      if(rateTo.isEmpty()) {
+//        System.out.println("Нельзя перевести на такой счет, нет нужного курса");
+//        return Collections.emptyMap();
+//      }
       return userRepository.transfer(activeUser, from, to, amount, rateFrom.get(), rateTo.get());
     }
     return Collections.emptyMap();
@@ -122,7 +133,7 @@ public class UserService {
     if (isActiveUser() && depositSum > 0) {
       if(dataRepository.getCurrency().containsKey(currency)) {
 
-        Account account = (userRepository.openNewAccount(activeUser, currency, depositSum));
+        Account account = userRepository.openNewAccount(activeUser, currency, depositSum);
         dataRepository.deposit(activeUser,account.getAccountNumber(),depositSum,currency);
         return Optional.of(account);
       }

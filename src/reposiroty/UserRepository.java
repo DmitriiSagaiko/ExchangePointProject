@@ -108,7 +108,7 @@ public class UserRepository {
   }
 
   public Account closeAccount(User activeUser, Integer accountNumber) {
-    if (activeUser.getOneAccount(accountNumber).get(accountNumber).getAmount() <= 1) {
+    if (activeUser.getOneAccount(accountNumber).get(accountNumber).getAmount() <= 1) { // проверка на баланс
       Account account = activeUser.getAccounts().get(accountNumber);
       activeUser.deleteAccount(accountNumber);
       return account;
