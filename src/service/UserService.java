@@ -178,7 +178,7 @@ public class UserService {
     return Collections.emptyMap();
   }
 
-  private Map<String, Double> getAllCurrencyAndRate() {
+  public Map<String, Double> getAllCurrencyAndRate() {
     return new HashMap<>(dataRepository.getCurrency());
   }
 

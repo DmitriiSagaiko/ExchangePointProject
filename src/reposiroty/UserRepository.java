@@ -39,7 +39,7 @@ public class UserRepository {
     }
     return Optional.empty();
   }
-  public Optional<User> registerUser(String email, String password, String name, int a) {
+  public Optional<User> registerUser(String email, String password, String name, int a) { // костыль
     try {
       EmailValidator.validate(email);
       PasswordValidator.validate(password);
