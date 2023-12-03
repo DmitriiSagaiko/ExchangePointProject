@@ -39,7 +39,7 @@ public class UserRepository {
     }
     return Optional.empty();
   }
-  public Optional<User> registerUser(String email, String password, String name, int a) {
+  public Optional<User> registerUser(String email, String password, String name, int a) { // костыль
     try {
       EmailValidator.validate(email);
       PasswordValidator.validate(password);
@@ -67,19 +67,26 @@ public class UserRepository {
   }
 
   public Map<Integer, Account> deposit(User activeUser, Integer accountNumber, double amount) {
-    if (isUserHasAccount(activeUser, accountNumber)) {
+
       Account account = activeUser.getAccounts().get(accountNumber);
       account.setAmount(account.getAmount() + amount);
       activeUser.getAccounts().put(accountNumber, account);
       System.out.println("Счет успешно пополнен на сумму :" + amount +" " + account.getCurrency());
       System.out.println("На счету осталось:" + account.getAmount() + " " + account.getCurrency());
       return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
-    }
-    Account newAccount = openNewAccount(activeUser, "RUB",
-        amount); // создается счет по дефолту в рублях
-    activeUser.getAccounts().put(newAccount.getAccountNumber(), newAccount);
-    return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
+
+//    Account newAccount = openNewAccount(activeUser, "RUB",
+//        amount); // создается счет по дефолту в рублях
+//    activeUser.getAccounts().put(newAccount.getAccountNumber(), newAccount);
+//    return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
   }
+  public Account deposit(User activeUser) {
+    Account newAccount = openNewAccount(activeUser, "RUB",
+        0); // создается счет по дефолту в рублях
+    activeUser.getAccounts().put(newAccount.getAccountNumber(), newAccount);
+    return newAccount;
+  }
+
 
   public Map<Integer, Account> withdraw(User activeUser, Integer accountNumber, double amount) {
     if ((isUserHasAccount(activeUser, accountNumber))) {
@@ -108,7 +115,7 @@ public class UserRepository {
   }
 
   public Account closeAccount(User activeUser, Integer accountNumber) {
-    if (activeUser.getOneAccount(accountNumber).get(accountNumber).getAmount() <= 1) {
+    if (activeUser.getOneAccount(accountNumber).get(accountNumber).getAmount() <= 1) { // проверка на баланс
       Account account = activeUser.getAccounts().get(accountNumber);
       activeUser.deleteAccount(accountNumber);
       return account;

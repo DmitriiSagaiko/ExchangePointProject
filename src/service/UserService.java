@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import models.Account;
 import models.Role;
 import models.Transaction;
@@ -32,6 +33,10 @@ public class UserService {
   }
 
   public Optional<User> login(String email, String password) {
+    if (isActiveUser()) {
+      System.out.println("Вы уже залогинены! Сначала выйдете из аккаунта");
+      return Optional.empty();
+    }
     Optional<User> user = userRepository.login(email, password);
     if (user.isPresent()) {
       activeUser = user.get();
@@ -45,8 +50,9 @@ public class UserService {
   public Optional<User> logout() {
     if (isActiveUser()) {
       System.out.println("Вышел из пользователя " + activeUser.getName());
+      Optional<User> result = Optional.ofNullable(activeUser);
       activeUser = null;
-      return Optional.empty();
+      return result;
     }
     System.out.println("Пользователь не произвел вход в личный кабинет");
     return Optional.empty();
@@ -67,7 +73,17 @@ public class UserService {
   }
 
   public Map<Integer, Account> deposit(Integer accountNumber, double amount) {
+    if (amount <= 0) {
+      System.out.println("Нельзя внести отрицательную и нулевую сумму!");
+      return Collections.emptyMap();
+    }
     if (isActiveUser()) {
+      if (activeUser.getOneAccount(accountNumber).get(accountNumber) == null) {
+        Account created = userRepository.deposit(activeUser);
+        dataRepository.deposit(activeUser, created.getAccountNumber(), amount,
+            created.getCurrency());
+        return userRepository.deposit(activeUser, created.getAccountNumber(), amount);
+      }
       String currency = activeUser.getOneAccount(accountNumber).get(accountNumber).getCurrency();
       dataRepository.deposit(activeUser, accountNumber, amount, currency);
       return userRepository.deposit(activeUser, accountNumber, amount);
@@ -76,57 +92,61 @@ public class UserService {
   }
 
   public Map<Integer, Account> withdraw(Integer accountNumber, double amount) {
-    if (isActiveUser()) {
-      String currency = activeUser.getOneAccount(accountNumber).get(accountNumber).getCurrency();
-      dataRepository.withdraw(activeUser, accountNumber, amount, currency);
-      return userRepository.withdraw(activeUser, accountNumber, amount);
+    if (!isActiveUser()) {
+      return Collections.emptyMap();
     }
-    return Collections.emptyMap();
+    if (amount <= 0) {
+      System.out.println("Нельзя снять отрицательную и нулевую сумму!");
+      return Collections.emptyMap();
+    }
+    if (activeUser.getOneAccount(accountNumber).get(accountNumber) == null) {
+      System.out.println("Нет такого счета. Попробуйте еще раз через с другой");
+      return Collections.emptyMap();
+    }
+    String currency = activeUser.getOneAccount(accountNumber).get(accountNumber).getCurrency();
+    dataRepository.withdraw(activeUser, accountNumber, amount, currency);
+    return userRepository.withdraw(activeUser, accountNumber, amount);
   }
 
   public Map<Integer, Account> transfer(Integer from, Integer to, double amount) {
-    if (amount <= 0 && activeUser.getOneAccount(from).get(from).getAmount() < amount) {
-      System.out.println("Нельзя перевести отрицательную сумму или на счету недостаточно средств ");
+    if (!isActiveUser()) {
       return Collections.emptyMap();
     }
-    if (isActiveUser()) {
-      Account fromAcc = activeUser.getOneAccount(from).get(from);
-      Account toAcc = activeUser.getOneAccount(to).get(to);
-      if (fromAcc == null) {
-        System.out.println("Отправляемый счет не существует. Попробуйте еще раз");
-        return Collections.emptyMap();
-      } else if (toAcc == null) {
-        System.out.println("Получаемый счет не существует. Попробуйте еще раз");
-        return Collections.emptyMap();
-      }
-      String currency = fromAcc.getCurrency();
-      dataRepository.transfer(activeUser, from, to, amount, currency);
-      Optional<Double> rateFrom = dataRepository.getTheRate(currency);
-      if(rateFrom.isEmpty()) {
-        System.out.println("Нельзя сделать перевод из выбранной валюты. Она не существует или счет открыт в другой валюте");
-        return Collections.emptyMap();
-      }
-      Map<Integer, Account> map = activeUser.getOneAccount(to);
-      String currencyTo = map.get(to).getCurrency();
-      Optional<Double> rateTo = dataRepository.getTheRate(currencyTo);
-      if(rateTo.isEmpty()) {
-        System.out.println("Нельзя перевести на такой счет, нет нужного курса");
-        return Collections.emptyMap();
-      }
-      return userRepository.transfer(activeUser, from, to, amount, rateFrom.get(), rateTo.get());
+    if (amount <= 0) {
+      System.out.println("Нельзя перевести отрицательную сумму");
+      return Collections.emptyMap();
     }
-    return Collections.emptyMap();
+    if (activeUser.getOneAccount(from).get(from) == null) {
+      System.out.println("Нет такого счета отправления. Попробуйте еще раз через с другой");
+      return Collections.emptyMap();
+    }
+    if (activeUser.getOneAccount(to).get(to) == null) {
+      System.out.println("Нет такого счета получения. Попробуйте еще раз через с другой");
+      return Collections.emptyMap();
+    }
+    if (activeUser.getOneAccount(from).get(from).getAmount() < amount) {
+      System.out.println("Недостаточно средств на балансе");
+      return Collections.emptyMap();
+    }
+
+    String currency = activeUser.getOneAccount(from).get(from).getCurrency();
+    dataRepository.transfer(activeUser, from, to, amount, currency);
+    Optional<Double> rateFrom = dataRepository.getTheRate(currency);
+
+    String currencyTo = activeUser.getOneAccount(to).get(to).getCurrency();
+    Optional<Double> rateTo = dataRepository.getTheRate(currencyTo);
+
+    return userRepository.transfer(activeUser, from, to, amount, rateFrom.get(), rateTo.get());
   }
 
   public Optional<Account> openNewAccount(String currency, double depositSum) {
     if (isActiveUser() && depositSum > 0) {
-      if(dataRepository.getCurrency().containsKey(currency)) {
+      if (dataRepository.getCurrency().containsKey(currency)) {
 
-        Account account = (userRepository.openNewAccount(activeUser, currency, depositSum));
-        dataRepository.deposit(activeUser,account.getAccountNumber(),depositSum,currency);
+        Account account = userRepository.openNewAccount(activeUser, currency, depositSum);
+        dataRepository.deposit(activeUser, account.getAccountNumber(), depositSum, currency);
         return Optional.of(account);
-      }
-      else {
+      } else {
         System.out.println("Такой валюты в банке нет!");
         return Optional.empty();
       }
@@ -143,15 +163,26 @@ public class UserService {
   }
 
   public List<Transaction> showTheHistory(int typeOfOperation, String currency) {
-    if (isActiveUser()) {
-      return dataRepository.showTheHistory(typeOfOperation, activeUser, currency);
+    if (!isActiveUser()) {
+      return Collections.emptyList();
+    }
+    if (typeOfOperation == 1) {
+      Predicate<Transaction> predicate1 = transaction -> transaction.getUser().equals(activeUser);
+      Predicate<Transaction> predicate2 = transaction -> transaction.getCurrency().equals(currency);
+      Predicate<Transaction> predicate = predicate1.and(predicate2);
+      return dataRepository.filterByPredicate(predicate);
+    } else if (typeOfOperation == 2) {
+      return dataRepository.filterByPredicate(
+          transaction -> transaction.getUser().equals(activeUser));
     }
     return Collections.emptyList();
   }
 
+
   public List<Transaction> showTheHistory(int typeOfOperation) {
     if (isActiveUser()) {
-      return dataRepository.showTheHistory(typeOfOperation, activeUser, "NULL");
+      Predicate<Transaction> predicate = transaction -> transaction.getUser().equals(activeUser);
+      return dataRepository.filterByPredicate(predicate);
     }
     return Collections.emptyList();
   }
@@ -178,7 +209,7 @@ public class UserService {
     return Collections.emptyMap();
   }
 
-  private Map<String, Double> getAllCurrencyAndRate() {
+  public Map<String, Double> getAllCurrencyAndRate() {
     return new HashMap<>(dataRepository.getCurrency());
   }
 
@@ -187,9 +218,10 @@ public class UserService {
     return map.keySet();
   }
 
-  public Map<Integer, User> users() {
+  public Map<Integer, User> getUsers() {
     return userRepository.getUsers();
   }
+
 
   public boolean isAdministrator() {
     if (isActiveUser()) {

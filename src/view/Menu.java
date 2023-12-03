@@ -219,7 +219,7 @@ public class Menu {
       String currency = scanner.nextLine();
       System.out.println(userService.showTheHistory(type, currency));
     } else if (type == 2) {
-      userService.showTheHistory(type).forEach(System.out::println);
+      userService.showTheHistory(type, "ALL").forEach(System.out::println);
     }
   } //8
 
@@ -294,7 +294,7 @@ public class Menu {
           }
           break;
           case 4: {
-            System.out.println(userService.users());
+            System.out.println(userService.getUsers());
             System.out.println("Введите id желаемого юзера для просмотра его операций");
             int id = scanner.nextInt();
             System.out.println(adminService.showUsersOperations(id));
@@ -308,10 +308,10 @@ public class Menu {
           }
           break;
           case 6: {
-            System.out.println(userService.users());
+            System.out.println(userService.getUsers());
             System.out.println("Введите id юзера, который будет кассиром");
             Integer id = scanner.nextInt();
-            Optional<User> userForCash = Optional.ofNullable(userService.users().get(id));
+            Optional<User> userForCash = Optional.ofNullable(userService.getUsers().get(id));
             adminService.assignCashier(userForCash);
           }
           break;

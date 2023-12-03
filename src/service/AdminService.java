@@ -56,7 +56,7 @@ public class AdminService {
     if (id < 1) {
       return Collections.emptyList();
     }
-    return dataRepository.showAllTransactionByUserId(id);
+    return dataRepository.filterByPredicate(transaction -> transaction.getUser().getId() == id);
   }
 
 
@@ -65,7 +65,7 @@ public class AdminService {
       System.out.println("Такой валюты нет");
       return Collections.emptyList(); // проверка курсов на наличие валюты
     }
-    return dataRepository.showAllCurrencyOperations(currency);
+    return dataRepository.filterByPredicate(transaction -> transaction.getCurrency().equals(currency));
   }
 
   public boolean assignCashier(Optional<User> userOptional) {
