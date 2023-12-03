@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import models.Account;
 import models.Role;
 import models.Transaction;
@@ -128,14 +129,14 @@ public class UserService {
       return Collections.emptyMap();
     }
 
-      String currency = activeUser.getOneAccount(from).get(from).getCurrency();
-      dataRepository.transfer(activeUser, from, to, amount, currency);
-      Optional<Double> rateFrom = dataRepository.getTheRate(currency);
+    String currency = activeUser.getOneAccount(from).get(from).getCurrency();
+    dataRepository.transfer(activeUser, from, to, amount, currency);
+    Optional<Double> rateFrom = dataRepository.getTheRate(currency);
 
-      String currencyTo = activeUser.getOneAccount(to).get(to).getCurrency();
-      Optional<Double> rateTo = dataRepository.getTheRate(currencyTo);
+    String currencyTo = activeUser.getOneAccount(to).get(to).getCurrency();
+    Optional<Double> rateTo = dataRepository.getTheRate(currencyTo);
 
-      return userRepository.transfer(activeUser, from, to, amount, rateFrom.get(), rateTo.get());
+    return userRepository.transfer(activeUser, from, to, amount, rateFrom.get(), rateTo.get());
   }
 
   public Optional<Account> openNewAccount(String currency, double depositSum) {
@@ -162,15 +163,26 @@ public class UserService {
   }
 
   public List<Transaction> showTheHistory(int typeOfOperation, String currency) {
-    if (isActiveUser()) {
-      return dataRepository.showTheHistory(typeOfOperation, activeUser, currency);
+    if (!isActiveUser()) {
+      return Collections.emptyList();
+    }
+    if (typeOfOperation == 1) {
+      Predicate<Transaction> predicate1 = transaction -> transaction.getUser().equals(activeUser);
+      Predicate<Transaction> predicate2 = transaction -> transaction.getCurrency().equals(currency);
+      Predicate<Transaction> predicate = predicate1.and(predicate2);
+      return dataRepository.filterByPredicate(predicate);
+    } else if (typeOfOperation == 2) {
+      return dataRepository.filterByPredicate(
+          transaction -> transaction.getUser().equals(activeUser));
     }
     return Collections.emptyList();
   }
 
+
   public List<Transaction> showTheHistory(int typeOfOperation) {
     if (isActiveUser()) {
-      return dataRepository.showTheHistory(typeOfOperation, activeUser, "NULL");
+      Predicate<Transaction> predicate = transaction -> transaction.getUser().equals(activeUser);
+      return dataRepository.filterByPredicate(predicate);
     }
     return Collections.emptyList();
   }

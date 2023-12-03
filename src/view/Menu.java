@@ -219,7 +219,7 @@ public class Menu {
       String currency = scanner.nextLine();
       System.out.println(userService.showTheHistory(type, currency));
     } else if (type == 2) {
-      userService.showTheHistory(type).forEach(System.out::println);
+      userService.showTheHistory(type, "ALL").forEach(System.out::println);
     }
   } //8
 

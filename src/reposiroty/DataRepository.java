@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import models.Transaction;
 import models.TypeOfOperation;
@@ -72,8 +73,6 @@ public class DataRepository {
     return Optional.ofNullable(currency.getCurrencyRate().get(input));
   }
 
-
-
   public Transaction deposit(User activeUser, Integer accountNumber, double amount, String value) {
     transactions.add(
         new Transaction(activeUser, accountNumber, TypeOfOperation.DEBIT, amount, value));
@@ -94,54 +93,17 @@ public class DataRepository {
     return transactions.get(transactions.size() - 1); // возвращаем последнюю транзакцию
   }
 
-  public List<Transaction> showTheHistory(int typeOfOperation, User activeUser, String currency) {
-    if (typeOfOperation == 1) {
-      return showTheHistoryByTheCurrency(activeUser, currency);
-    } else if (typeOfOperation == 2) {
-      return showTheHistoryOfAllAccounts(activeUser);
-    }
-    System.out.println("Нет такого вида операции. Попробуйте еще раз");
-    return Collections.emptyList();
-  }
-
 
   public Map<String, Double> getCurrency() {
     return currency.getCurrencyRate();
   }
 
-  private List<Transaction> showTheHistoryByTheCurrency(User activeUser, String currency) {
+  public List<Transaction> filterByPredicate(Predicate<Transaction> predicate) {
     List<Transaction> list = new ArrayList<>(transactions);
     List<Transaction> result = list.stream()
-        .filter(transaction -> transaction.getUser().equals(activeUser))
-        .filter(transaction -> transaction.getCurrency().equals(currency))
+        .filter(predicate)
         .collect(Collectors.toList());
     return result;
   }
-
-  private List<Transaction> showTheHistoryOfAllAccounts(User activeUser) {
-    List<Transaction> list = new ArrayList<>(transactions);
-    List<Transaction> result = list.stream()
-        .filter(transaction -> transaction.getUser().equals(activeUser))
-        .collect(Collectors.toList());
-    return result;
-  }
-
-  public List<Transaction> showAllTransactionByUserId(int id) {
-    List<Transaction> input = new ArrayList<>(transactions);
-    List<Transaction> output;
-    output = input.stream()
-        .filter(transaction -> transaction.getUser().getId() == id)
-        .collect(Collectors.toList());
-    return output;
-  }
-  public List<Transaction> showAllCurrencyOperations(String currency) {
-    List<Transaction> input = new ArrayList<>(transactions);
-    List<Transaction> output;
-    output = input.stream()
-        .filter(transaction -> transaction.getCurrency().equals(currency))
-        .collect(Collectors.toList());
-    return output;
-  }
-
 
 }

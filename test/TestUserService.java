@@ -32,7 +32,7 @@ public class TestUserService {
     userService.login("user3@mail.ru", "User123$");
   }
 
-  // UserRegistration  - уйдет в exception
+
 
   //UserLogin()
   /*
