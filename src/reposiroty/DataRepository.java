@@ -80,6 +80,7 @@ public class DataRepository {
     return transactions.get(transactions.size() - 1);
   }
 
+
   public Transaction withdraw(User activeUser, Integer accountNumber, double amount, String value) {
     transactions.add(
         new Transaction(activeUser, accountNumber, TypeOfOperation.WITHDRAW, amount, value));
