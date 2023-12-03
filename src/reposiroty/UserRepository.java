@@ -75,10 +75,6 @@ public class UserRepository {
       System.out.println("На счету осталось:" + account.getAmount() + " " + account.getCurrency());
       return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
 
-//    Account newAccount = openNewAccount(activeUser, "RUB",
-//        amount); // создается счет по дефолту в рублях
-//    activeUser.getAccounts().put(newAccount.getAccountNumber(), newAccount);
-//    return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
   }
   public Account deposit(User activeUser) {
     Account newAccount = openNewAccount(activeUser, "RUB",
