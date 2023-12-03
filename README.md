@@ -1,78 +1,64 @@
  
-## Проект "Обменный пункт валюты"
+## Project "Currency Exchange Office"
 
-**Описание проекта:**
-Разработать консольное приложение для имитации работы обменного пункта валюты.
-Пользователи могут регистрировать аккаунты, открывать счета в различных валютах, пополнять счета, снимать средства со счетов, осуществлять обмен валюты, а также просматривать историю своих операций.
+**Project description:**
+Develop a console application to simulate the operation of a currency exchange bureau.
+Users can register accounts, open accounts in different currencies, fund accounts, withdraw funds from accounts, exchange currencies, and view the history of their transactions.
 
-**Техническое задание:**
+**Technical task:**
 
-1. **Многослойная архитектура приложения:**
-    - **Модель (Model):** Определить сущности, такие как пользователь, аккаунт, операция, валюта, курс валют и другие необходимые объекты.
-    - **Сервис (Service):** Разработать бизнес-логику приложения, включая управление данными пользователей, выполнение валютных операций и т.д.
-    - **Репозиторий (Repository):** Создать слой для взаимодействия с хранилищем данных (например, в памяти или файле(-ах)).
+1. **Multilayer Application Architecture:**
+    - **Model:** Define entities such as user, account, transaction, currency, exchange rate and other required entities.
+    - **Service:** Develop the business logic of the application, including managing user data, performing currency transactions, etc.
+    - **Repository:** Create a layer to interact with the data repository (e.g., in memory or file(s)).
 
-2. **Организация данных и управление аккаунтами:**
-    - Реализовать механизмы для управления данными пользователя, включая их аккаунты и ведение счетов.
-    - У пользователя могут быть счета минимум в 3 разных валютах.
+2. **Data Organization and Account Management:**
+    - Implement mechanisms to manage a user's data, including their accounts and account management.
+    - A user can have accounts in at least 3 different currencies.
 
-3. **Управление валютными операциями:**
-    - Обеспечить функциональность для осуществления валютных операций, включая пополнение, обмен и просмотр истории операций.
+3. **Currency Transaction Management:**
+    - Provide functionality for currency transactions, including deposits, exchanges, and viewing transaction history.
 
-4. **Валидация данных:**
-    - При регистрации нового пользователя реализовать валидацию введенного email и пароля. Валидация должна убедиться, что email соответствует стандартному формату электронной почты, а пароль соответствует заданным критериям безопасности (например, минимальная длина, наличие букв и цифр).
+4. **Data Validation:**
+    - When registering a new user, implement validation of the entered email and password. Validation should ensure that the email corresponds to the standard e-mail format and the password meets the specified security criteria (e.g. minimum length, presence of letters and digits).
 
-5. **Пользовательский интерфейс:**
-    - Реализовать консольное меню для доступа к функциональности приложения.
+5. **User Interface:**
+    - Implement a console menu to access application functionality.
 
-6. **Тестирование:**
-    - Разработать JUnit тесты для проверки всех аспектов функциональности приложения, особое внимание уделить тестированию сервисного слоя.
+6. **Testing:**
+    - Develop JUnit tests to test all aspects of the application functionality, with special attention to testing the service layer.
 
-7. **Использование коллекции Map:**
-    - В процессе разработки приложения активно использовать коллекцию `Map` для организации и управления данными, такими как учетные записи пользователей, счета, курсы валют и другие подходящие сценарии.
-    - Например:
-        - Для хранения списка аккаунтов пользователя, где ключом будет идентификатор пользователя, а значением - список его аккаунтов.
-        - Для хранения курсов валют, где ключом будет код валюты, а значением - текущий курс.
+7. **Use Map collection:**
+    - During the application development process, actively use the `Map` collection to organize and manage data such as user accounts, invoices, exchange rates and other suitable scenarios.
+    - For example:
+        - To store a list of user accounts, where the key would be the user ID and the value would be the list of user accounts.
+        - To store currency rates, where the key would be the currency code and the value would be the current rate.
 
-**Опционально:**
-- В случае провала валидации, приложение должно выбрасывать исключение, которое затем должно быть корректно обработано. Это может включать информирование пользователя о причине ошибки и предложение повторить попытку ввода данных.
-- Функционал для просмотра исторических курсов валют.
-
-
-## Функционал пользователя:
-- Регистрация нового пользователя (с валидацией email и password)
-- Вход в аккаунт
-- Просмотр баланса (остатка на всех счетах или каком-то конкретном счете)
-- Пополнение счета в выбранной валюте (проверка существования такого счета у пользователя. Если отсутствует - открыть соответствующий счет)
-- Снятие средств со счета (с соответствующими проверками возможности операции)
-- Открытие нового счета
-- Закрытие счета (с проверками: если на счету есть средства? что делать?)
-- Просмотр истории операций (по всем счетам / по конкретной валюте)
-- Обмен валют (перевод средств с одного счета на другой с соответствующим кросс-курсом)
-
-## Функционал администратора
-- Изменение курса валюты
-- Возможность добавление или удаление валют из списка (При удаление проверка, есть ли открытые счета у пользователей в этой валюте? Если есть - что делать?)
-- Просмотр операций пользователя
-- Просмотр операций по валюте
-- Назначение другого пользователя администратором (модератором / кассиром)
-
-## Организация хранения данных (списки пользователей, валют, курсов и т.д. и т.п.)
-
-## Опционально
-- История изменения курсов валюты
-- Свои классы исключений и их обработка
+**Optional:**
+- If validation fails, the application should throw an exception, which should then be handled correctly. This may include informing the user of the reason for the error and prompting them to retry data entry.
+- Functionality to view historical exchange rates.
 
 
+## User functionality:
+- New user registration (with email and password validation)
+- Account login
+- View balance (balance on all accounts or a specific account)
+- Replenishment of the account in the selected currency (check if the user has such an account. If there is no such account - open a corresponding account)
+- Withdrawal of funds from an account (with corresponding checks on the possibility of the operation)
+- Opening a new account
+- Closing an account (with checks: if there are funds on the account? what to do?)
+- Viewing transaction history (for all accounts / for a specific currency)
+- Currency exchange (transferring funds from one account to another with the corresponding cross-rate)
 
+## Administrator functionality
+- Change currency rate
+- Ability to add or delete currencies from the list (When deleting, check if users have open accounts in this currency? If there are - what to do?)
+- View user transactions
+- View operations by currency
+- Assigning another user as an administrator (moderator / cashier)
 
+## Organize data storage (lists of users, currencies, rates, etc. etc.)
 
-
-
-
-
-
-
-
-
-
+## Optional
+- Currency rate history
+- Custom exception classes and their handling
