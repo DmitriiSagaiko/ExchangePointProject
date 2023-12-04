@@ -1,5 +1,7 @@
 package service;
 
+import exception.EmailValidateException;
+import exception.PasswordValidateExcepton;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +30,8 @@ public class UserService {
   }
 
 
-  public Optional<User> userRegistration(String email, String password, String name) {
+  public User userRegistration(String email, String password, String name)
+      throws EmailValidateException, PasswordValidateExcepton {
     return userRepository.registerUser(email, password, name);
   }
 

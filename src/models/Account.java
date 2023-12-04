@@ -17,7 +17,7 @@ public class Account {
   @Override
   public String toString() {
     return
-           " сумма " + amount + " " + currency + "\n";
+        " сумма " + amount + " " + currency + "\n";
   }
 
   public int getAccountNumber() {
