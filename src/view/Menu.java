@@ -1,10 +1,11 @@
 package view;
 
+import exception.EmailValidateException;
+import exception.PasswordValidateExcepton;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
 import models.Account;
-import models.Transaction;
 import models.User;
 import service.AdminService;
 import service.UserService;
@@ -111,7 +112,13 @@ public class Menu {
 
     System.out.println("Введите ваше Имя и Фамилию");
     String name = scanner.nextLine();
-    userService.userRegistration(email, password, name);
+    try {
+      userService.userRegistration(email, password, name);
+    } catch (EmailValidateException e) {
+      e.printStackTrace();
+    } catch (PasswordValidateExcepton e) {
+      e.printStackTrace();
+    }
   } //1
 
   private void login() {
@@ -123,10 +130,10 @@ public class Menu {
   } //2
 
   private void showTheBalance() {
-    if(!userService.isActiveUser()) {
+    if (!userService.isActiveUser()) {
       return;
     }
-    if(userService.showAllAccountsID()) {
+    if (userService.showAllAccountsID()) {
       System.out.println("Хотите посмотреть на конкретном счете - нажмите 1");
       System.out.println("Хотите посмотреть на всех счетах - нажмите 2");
       System.out.println("Назад - нажмите 3");
@@ -153,7 +160,7 @@ public class Menu {
   } //3
 
   private void deposit() {
-    if(!userService.isActiveUser()) {
+    if (!userService.isActiveUser()) {
       return;
     }
     if (userService.showAllAccountsID()) {
@@ -166,10 +173,10 @@ public class Menu {
   } //4
 
   private void withdraw() {
-    if(!userService.isActiveUser()) {
+    if (!userService.isActiveUser()) {
       return;
     }
-    if(userService.showAllAccountsID()) {
+    if (userService.showAllAccountsID()) {
       System.out.println("Введите номер счета");
       Integer accountID = scanner.nextInt();
       System.out.println("Введите сумму снятия");
@@ -179,7 +186,7 @@ public class Menu {
   } //5
 
   private void openNewAccount() {
-    if(!userService.isActiveUser()) {
+    if (!userService.isActiveUser()) {
       return;
     }
     System.out.println("Доступные валюты: " + userService.getCurrency());
@@ -188,11 +195,13 @@ public class Menu {
     System.out.println("Введите сумму открытия счета");
     double sum = scanner.nextDouble();
     Optional<Account> account = userService.openNewAccount(currency, sum);
-    System.out.println(account.isPresent() ? "Открытие счета прошло успешно. Номер вашего нового счета: " + account.get().getAccountNumber() : " Не удалось создать новый счет");
+    System.out.println(
+        account.isPresent() ? "Открытие счета прошло успешно. Номер вашего нового счета: "
+            + account.get().getAccountNumber() : " Не удалось создать новый счет");
   } //6
 
   private void closeAccount() {
-    if(!userService.isActiveUser()) {
+    if (!userService.isActiveUser()) {
       return;
     }
     System.out.println("У тебя есть такие счета:");
@@ -200,14 +209,17 @@ public class Menu {
       System.out.println("Введите номер закрываемого счета");
       Integer accountID = scanner.nextInt();
       Optional<Account> account = userService.closeAccount(accountID);
-      if (account.isEmpty()) return;
+      if (account.isEmpty()) {
+        return;
+      }
       System.out.println(
-          account.isPresent() ? "Счет " +account.get().getAccountNumber() + " был успешно закрыт!" : "Банковский счет не существует. Его нельзя закрыть");
+          account.isPresent() ? "Счет " + account.get().getAccountNumber() + " был успешно закрыт!"
+              : "Банковский счет не существует. Его нельзя закрыть");
     }
   } //7
 
   private void showTheHistory() {
-    if(!userService.isActiveUser()) {
+    if (!userService.isActiveUser()) {
       return;
     }
     System.out.println("1 - просмотр по валюте");
@@ -225,7 +237,7 @@ public class Menu {
 
 
   private void transfer() {
-    if(userService.checkTheBalance().isEmpty()) {
+    if (userService.checkTheBalance().isEmpty()) {
       System.out.println("У вас нет открытых счетов");
       return;
     }
@@ -246,7 +258,7 @@ public class Menu {
   } //10
 
   private void showOptionsForAdmin() {
-    if(!userService.isActiveUser()) {
+    if (!userService.isActiveUser()) {
       return;
     }
     if (userService.isAdministrator()) {

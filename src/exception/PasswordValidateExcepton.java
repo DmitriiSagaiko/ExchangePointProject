@@ -1,6 +1,6 @@
 package exception;
 
-public class PasswordValidateExcepton extends Exception{
+public class PasswordValidateExcepton extends Exception {
 
   public PasswordValidateExcepton(String message) {
     super(message);

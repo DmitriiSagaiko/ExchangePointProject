@@ -18,39 +18,39 @@ import models.User;
 public class UserRepository {
 
   public UserRepository() {
-    init();
+    try {
+      init();
+    } catch (EmailValidateException e) {
+      throw new RuntimeException(e);
+    } catch (PasswordValidateExcepton e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private final Map<Integer, User> users = new HashMap<>();
 
-  public static int counter = 99999;
-  public static int id = 0;
+  public int counter = 99999;
+  public int id = 0;
 
-  public Optional<User> registerUser(String email, String password, String name) {
-    try {
-      EmailValidator.validate(email);
-      PasswordValidator.validate(password);
-      User newUser = new User(name, Role.USER, generateIdForUser(), email, password);
-      users.put(newUser.getId(), newUser);
-      System.out.println("Новый юзер успешно создан!");
-      return Optional.of(newUser);
-    } catch (EmailValidateException | PasswordValidateExcepton e) {
-      e.printStackTrace();
-    }
-    return Optional.empty();
+  public User registerUser(String email, String password, String name)
+      throws EmailValidateException, PasswordValidateExcepton {
+    EmailValidator.validate(email);
+    PasswordValidator.validate(password);
+    User newUser = new User(name, Role.USER, generateIdForUser(), email, password);
+    users.put(newUser.getId(), newUser);
+    System.out.println("Новый юзер успешно создан!");
+    return newUser;
   }
-  public Optional<User> registerUser(String email, String password, String name, int a) { // костыль
-    try {
-      EmailValidator.validate(email);
-      PasswordValidator.validate(password);
-      User newUser = new User(name, Role.ADMINISTRATOR, generateIdForUser(), email, password);
-      users.put(newUser.getId(), newUser);
-      System.out.println("Новый юзер успешно создан!");
-      return Optional.of(newUser);
-    } catch (EmailValidateException | PasswordValidateExcepton e) {
-      e.printStackTrace();
-    }
-    return Optional.empty();
+
+  public User registerUser(String email, String password, String name, int a)
+      throws EmailValidateException, PasswordValidateExcepton { // костыль
+    EmailValidator.validate(email);
+    PasswordValidator.validate(password);
+    User newUser = new User(name, Role.ADMINISTRATOR, generateIdForUser(), email, password);
+    users.put(newUser.getId(), newUser);
+    System.out.println("Новый юзер успешно создан!");
+    return newUser;
+
   }
 
   public Optional<User> login(String email, String password) {
@@ -68,14 +68,15 @@ public class UserRepository {
 
   public Map<Integer, Account> deposit(User activeUser, Integer accountNumber, double amount) {
 
-      Account account = activeUser.getAccounts().get(accountNumber);
-      account.setAmount(account.getAmount() + amount);
-      activeUser.getAccounts().put(accountNumber, account);
-      System.out.println("Счет успешно пополнен на сумму :" + amount +" " + account.getCurrency());
-      System.out.println("На счету осталось:" + account.getAmount() + " " + account.getCurrency());
-      return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
+    Account account = activeUser.getAccounts().get(accountNumber);
+    account.setAmount(account.getAmount() + amount);
+    activeUser.getAccounts().put(accountNumber, account);
+    System.out.println("Счет успешно пополнен на сумму :" + amount + " " + account.getCurrency());
+    System.out.println("На счету осталось:" + account.getAmount() + " " + account.getCurrency());
+    return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
 
   }
+
   public Account deposit(User activeUser) {
     Account newAccount = openNewAccount(activeUser, "RUB",
         0); // создается счет по дефолту в рублях
@@ -90,7 +91,8 @@ public class UserRepository {
         Account account = activeUser.getAccounts().get(accountNumber);
         account.setAmount(account.getAmount() - amount);
         activeUser.getAccounts().put(accountNumber, account);
-        System.out.println("Деньги со счета успешно сняты :" + amount +" " + account.getCurrency());
+        System.out.println(
+            "Деньги со счета успешно сняты :" + amount + " " + account.getCurrency());
         System.out.println(
             "На счету осталось:" + account.getAmount() + " " + account.getCurrency());
         return activeUser.getAccounts(); // спросить у сергея что лучше возвращать?
@@ -111,7 +113,8 @@ public class UserRepository {
   }
 
   public Account closeAccount(User activeUser, Integer accountNumber) {
-    if (activeUser.getOneAccount(accountNumber).get(accountNumber).getAmount() <= 1) { // проверка на баланс
+    if (activeUser.getOneAccount(accountNumber).get(accountNumber).getAmount()
+        <= 1) { // проверка на баланс
       Account account = activeUser.getAccounts().get(accountNumber);
       activeUser.deleteAccount(accountNumber);
       return account;
@@ -140,11 +143,11 @@ public class UserRepository {
     return getId();
   }
 
-  private static int getCounter() {
+  private int getCounter() {
     return counter;
   }
 
-  public static int getId() {
+  public int getId() {
     return id;
   }
 
@@ -186,7 +189,7 @@ public class UserRepository {
     return accounts;
   }
 
-  private void init() {
+  private void init() throws EmailValidateException, PasswordValidateExcepton {
     registerUser("user1@mail.ru", "User123$", "Андрей Юзеровских");
     registerUser("user2@mail.ru", "User123$", "Максим Юзеровских");
     registerUser("user3@mail.ru", "User123$", "Антон Юзеровских", 100);

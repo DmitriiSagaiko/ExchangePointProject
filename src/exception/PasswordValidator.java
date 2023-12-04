@@ -3,8 +3,9 @@ package exception;
 public class PasswordValidator {
 
   public static void validate(String password) throws PasswordValidateExcepton {
-    if (password.length() < 8) throw new PasswordValidateExcepton("Length for pass < 8");
-
+    if (password.length() < 8) {
+      throw new PasswordValidateExcepton("Length for pass < 8");
+    }
 
     boolean[] res = new boolean[4];
     for (int i = 0; i < password.length(); i++) {

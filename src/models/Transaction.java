@@ -18,7 +18,8 @@ public class Transaction {
   private String currency;
 
 
-  public Transaction(User user, Integer accountFrom, TypeOfOperation type, double amount, String currency) {
+  public Transaction(User user, Integer accountFrom, TypeOfOperation type, double amount,
+      String currency) {
     this.user = user;
     this.accountFrom = accountFrom;
     this.type = type;
@@ -79,14 +80,15 @@ public class Transaction {
   @Override
   public String toString() {
     return "Transaction{" +
-        "Date=" + localDateTime.getDayOfMonth() + localDateTime.getMonth() + localDateTime.getYear() + localDateTime.getHour() + localDateTime.getMinute() +
+        "Date=" + localDateTime.getDayOfMonth() + localDateTime.getMonth() + localDateTime.getYear()
+        + localDateTime.getHour() + localDateTime.getMinute() +
         ", user=" + user.getName() +
         ", amount=" + amount +
         ", accountFrom=" + accountFrom +
         ", accountTo=" + accountTo +
         ", type=" + type +
-        ", currency='" + currency  +
-        '}'+ "\n";
+        ", currency='" + currency +
+        '}' + "\n";
   }
 
   public String getCurrency() {

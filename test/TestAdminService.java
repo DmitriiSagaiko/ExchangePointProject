@@ -28,6 +28,9 @@ public class TestAdminService {
   AdminService adminService = new AdminService(userRepository, dataRepository);
   UserService userService = new UserService(userRepository, dataRepository);
 
+  public TestAdminService() {
+  }
+
 
   @Test
   @BeforeEach
@@ -36,14 +39,7 @@ public class TestAdminService {
     userService.login("user3@mail.ru", "User123$");
   }
 
-  //Изменение курса валюты.
-  /*
-  Плохие:
-  Пытаемся изменить рубль - ожидаем false
-  Пытаемся задать курс EUR отрицательный - false
-  Хорошие:
-  Задаем курс Евро, Доллара и ожидаем тру. Потом берем текущие курсы и проверяем, что они задались.
-   */
+  ///////////////////////////////////////////////////////////////////////////////////
 
   @Test
   void testChangeTheCurrencyRUB() {
@@ -67,18 +63,8 @@ public class TestAdminService {
     assertTrue(result1);
     assertTrue(result2);
   }
+  ///////////////////////////////////////////////////////////////////////////////////
 
-  //Добавить валюту
-  /*
-    Плохие:
-    Пытаемся добавить существующую валюту - получаем false
-    Пытаемся добавить отрицательный курс к валюте - получаем false
-
-    Хорошие:
-    Пытаемся добавить SRD с нормальный курсом - получаем true. Потом берем текущий курс и проверяем,
-    что в нем есть сербский динар и что его курс равен заданному
-
-   */
 
   @Test
   void testAddExistingCurrency() {
@@ -98,14 +84,7 @@ public class TestAdminService {
     assertEquals(0.84, userService.getAllCurrencyAndRate().get("RSD"));
   }
 
-  //Удалить валюту
-  /*
-      Плохие:
-      Пытаемся удалить несуществующую валюту. Должны получить false.
-      Открываем у пользователя счет в любой валюте. Закидываем туда деньги и пытаемся ее удалить. Получаем false. Валюта все еще в списке
-
-      Хорошие: Опустошаем все счета в выбранной валюте и удаляем ее. Ожидаем тру. Идем проверять карту, количество валют должно стать меньше на 1, удаленной валюты не должно быть в списке.
-   */
+  ///////////////////////////////////////////////////////////////////////////////////
 
   @Test
   void testDeleteUnexistingCurrency() {
@@ -130,13 +109,7 @@ public class TestAdminService {
     assertNull(userService.getAllCurrencyAndRate().get("USD"));
   }
 
-  //Показать всю историю операций по UserId.
-  /*
-  Плохие: Вывести на экран историю юзера с Id = 0 - ожидаем пустой лист
-  Плохие: Вывести на экран историю юзера с Id = 1000 - ожидаем пустой лист
-
-  Хорошие: У юзера 3, внести и вывести деньги по любой валюте. проверить по сумме и по валюте операции.
-   */
+  ///////////////////////////////////////////////////////////////////////////////////
 
   public static Stream<Integer> GenerateID() {
     return Stream.of(-1, 0, 1000, 10001, 100000);
@@ -158,13 +131,8 @@ public class TestAdminService {
     assertEquals(TypeOfOperation.WITHDRAW, result.get(1).getType());
   }
 
-  // Показать операции по выбранной валюте
+  ///////////////////////////////////////////////////////////////////////////////////
 
-  /*
-  Плохие:
-  Выбираем придуманную валюту и получаем пустой список
-  Хорошие: Сделать несколько-3 операций по одной валюте и проверить что длина листа три и операции содержат выбранную валюту и сумму
-   */
 
   @Test
   void showWrongCurrencyOperations() {
@@ -187,14 +155,8 @@ public class TestAdminService {
     assertEquals(TypeOfOperation.WITHDRAW, result.get(1).getType());
   }
 
-  // Назначение кассира
-  /*
-  Плохие:
-  Передаем юзера Null - получаем false
-  Пытаемся сменить роль 3 юзера, который админ - получаем false
-  Хорошие: берем второго юзера, задаем ему кассира - получаем тру
-  Хорошие: берем первого юзера, задаем ему кассира - получаем тру
-   */
+  ///////////////////////////////////////////////////////////////////////////////////
+
 
   @Test
   void assignBadCashier() {
@@ -216,6 +178,5 @@ public class TestAdminService {
     assertEquals(Role.CASHOFFICER, user1.getRole());
     assertEquals(Role.CASHOFFICER, user2.getRole());
   }
-
 
 }

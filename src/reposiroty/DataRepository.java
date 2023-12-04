@@ -45,7 +45,6 @@ public class DataRepository {
   }
 
 
-
   public static class Currency {
 
     final Map<String, Double> currencyRate = new HashMap<>();

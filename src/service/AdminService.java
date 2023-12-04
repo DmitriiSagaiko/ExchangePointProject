@@ -22,7 +22,7 @@ public class AdminService {
     this.dataRepository = dataRepository;
   }
 
-  public boolean changeCurrencyExchange (String currency, Double amount) {
+  public boolean changeCurrencyExchange(String currency, Double amount) {
     if (currency.equals("RUB") || amount <= 0) {
       return false;
     }
@@ -35,7 +35,7 @@ public class AdminService {
   }
 
   public boolean deleteTheCurrency(String currency) {
-    if(!dataRepository.getCurrency().containsKey(currency)) {
+    if (!dataRepository.getCurrency().containsKey(currency)) {
       return false; // проверка курсов на наличие удаляемого
     }
     Set<Account> accountSet = userRepository.getAllUsersAccounts();
@@ -43,7 +43,8 @@ public class AdminService {
         .filter(account -> account.getCurrency().equals(currency))
         .count();
     if (result != 0) {
-      System.out.println("У пользователей есть открытые счета. Закройте их самостоятельно и повторите запрос");
+      System.out.println(
+          "У пользователей есть открытые счета. Закройте их самостоятельно и повторите запрос");
       return false;
     } else {
       System.out.println("Удаляю валюту" + currency);
@@ -61,11 +62,12 @@ public class AdminService {
 
 
   public List<Transaction> showCurrencyOperations(String currency) {
-    if(!dataRepository.getCurrency().containsKey(currency)) {
+    if (!dataRepository.getCurrency().containsKey(currency)) {
       System.out.println("Такой валюты нет");
       return Collections.emptyList(); // проверка курсов на наличие валюты
     }
-    return dataRepository.filterByPredicate(transaction -> transaction.getCurrency().equals(currency));
+    return dataRepository.filterByPredicate(
+        transaction -> transaction.getCurrency().equals(currency));
   }
 
   public boolean assignCashier(Optional<User> userOptional) {

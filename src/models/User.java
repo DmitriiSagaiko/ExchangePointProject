@@ -7,7 +7,7 @@ public class User {
 
   private String name;
 
-  private final Map<Integer,Account> accounts = new HashMap<>();
+  private final Map<Integer, Account> accounts = new HashMap<>();
 
   private Role role = Role.USER;
 
@@ -16,12 +16,6 @@ public class User {
   private String email;
   private String password;
 
-  public User(String name, int id, String email, String password) {
-    this.name = name;
-    this.id = id;
-    this.email = email;
-    this.password = password;
-  }
 
   public User(String name, Role role, int id, String email, String password) {
     this.name = name;
@@ -50,7 +44,7 @@ public class User {
   }
 
   public Map<Integer, Account> getAccounts() {
-    Map<Integer,Account> result = new HashMap<>(accounts);
+    Map<Integer, Account> result = new HashMap<>(accounts);
     return result;
   }
 
@@ -82,18 +76,19 @@ public class User {
     this.password = password;
   }
 
-  public Map<Integer,Account> getOneAccount(Integer accountID) {
-    Map<Integer,Account> my = new HashMap<>(accounts);
-    Map<Integer,Account> result = new HashMap<>();
+  public Map<Integer, Account> getOneAccount(Integer accountID) {
+    Map<Integer, Account> my = new HashMap<>(accounts);
+    Map<Integer, Account> result = new HashMap<>();
     result.put(accountID, my.get(accountID));
     return result;
   }
 
-  public Map<Integer,Account> addNewAccount(Integer accountID, Account newAccount) {
-    accounts.put(accountID,newAccount);
+  public Map<Integer, Account> addNewAccount(Integer accountID, Account newAccount) {
+    accounts.put(accountID, newAccount);
     return new HashMap<>(accounts);
   }
-  public Map<Integer,Account> deleteAccount(Integer accountID) {
+
+  public Map<Integer, Account> deleteAccount(Integer accountID) {
     accounts.remove(accountID);
     return new HashMap<>(accounts);
   }
